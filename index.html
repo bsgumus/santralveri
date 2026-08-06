@@ -321,7 +321,7 @@
 "use strict";
 /* ═══════════ AYAR ═══════════
    Cloudflare Worker adresi — kurulumdan sonra kendi worker adresinizle değiştirin. */
-const WORKER_URL = "https://elektrikverileri-api.DEGISTIR.workers.dev";
+const WORKER_URL = "https://elektrikverileri-api.bahadirsgumus.workers.dev/";
 const API = new URLSearchParams(location.search).get("api") || WORKER_URL;
 const CF_START_YEAR = 2020;
 const TR_ANNUAL_TWH = 354; // Türkiye yıllık üretim varsayımı (pay kartı)

@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Elektrik Verileri — Santral Üretim Paneli</title>
+<meta name="description" content="EPİAŞ Şeffaflık verisiyle santral bazlı saatlik üretim: grafik, kapasite faktörü, Excel/CSV indirme.">
+<style>
+  :root {
+    color-scheme: light;
+    --bg:             #f4f3f1;
+    --surface-1:      #fcfcfb;
+    --surface-2:      #f0efec;
+    --border:         #e2e1dd;
+    --text-primary:   #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted:     #8a8983;
+    --series-1:       #2a78d6;
+    --series-1-soft:  rgba(42, 120, 214, 0.10);
+    --grid:           #e7e6e2;
+    --accent-bg:      #2a78d6;
+    --accent-fg:      #ffffff;
+    --danger:         #b3261e;
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg:             #121211;
+    --surface-1:      #1a1a19;
+    --surface-2:      #242422;
+    --border:         #33332f;
+    --text-primary:   #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted:     #8a8983;
+    --series-1:       #3987e5;
+    --series-1-soft:  rgba(57, 135, 229, 0.14);
+    --grid:           #2c2c29;
+    --accent-bg:      #3987e5;
+    --accent-fg:      #0b0b0b;
+    --danger:         #ffb4ab;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text-primary);
+    font: 15px/1.5 -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  .wrap { max-width: 1060px; margin: 0 auto; padding: 20px 16px 60px; }
+  header { display: flex; align-items: baseline; gap: 12px; margin: 8px 0 18px; flex-wrap: wrap; }
+  header h1 { font-size: 21px; margin: 0; }
+  header .sub { color: var(--text-secondary); font-size: 13px; }
+  .hbtns { margin-left: auto; display: flex; gap: 8px; }
+  .hbtns button {
+    border: 1px solid var(--border); background: var(--surface-1);
+    color: var(--text-secondary); border-radius: 8px; padding: 4px 10px; cursor: pointer; font-size: 13px;
+  }
+  .card {
+    background: var(--surface-1); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px; margin-bottom: 14px;
+  }
+  label.small { display: block; font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; }
+
+  /* ── giriş ekranı ── */
+  #loginOverlay {
+    position: fixed; inset: 0; z-index: 100; background: var(--bg);
+    display: flex; align-items: center; justify-content: center; padding: 16px;
+  }
+  .login-card {
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 14px;
+    padding: 28px; width: 100%; max-width: 420px; box-shadow: 0 12px 40px rgba(0,0,0,.10);
+  }
+  .login-card h1 { font-size: 22px; margin: 0 0 4px; }
+  .login-card .tag { color: var(--text-secondary); font-size: 13.5px; margin-bottom: 18px; }
+  .login-card input {
+    width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px;
+    background: var(--surface-2); color: var(--text-primary); font-size: 15px; margin-bottom: 10px;
+  }
+  .login-card input:focus { outline: 2px solid var(--series-1); outline-offset: -1px; }
+  .login-card button {
+    width: 100%; background: var(--accent-bg); color: var(--accent-fg); border: none;
+    border-radius: 8px; padding: 11px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 4px;
+  }
+  .login-card button:disabled { opacity: .5; }
+  .login-note { font-size: 12px; color: var(--text-muted); margin-top: 14px; line-height: 1.55; }
+  .login-note a { color: var(--series-1); }
+  #loginErr { color: var(--danger); font-size: 13.5px; margin-top: 10px; display: none; }
+
+  /* ── arama ── */
+  .searchbox { position: relative; }
+  .searchbox input {
+    width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 8px;
+    background: var(--surface-2); color: var(--text-primary); font-size: 15px;
+  }
+  .searchbox input:focus { outline: 2px solid var(--series-1); outline-offset: -1px; }
+  #results {
+    position: absolute; z-index: 20; left: 0; right: 0; top: calc(100% + 4px);
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px;
+    max-height: 320px; overflow-y: auto; box-shadow: 0 8px 24px rgba(0,0,0,.14); display: none;
+  }
+  #results .item { padding: 8px 12px; cursor: pointer; border-bottom: 1px solid var(--border); }
+  #results .item:last-child { border-bottom: none; }
+  #results .item:hover, #results .item.active { background: var(--series-1-soft); }
+  #results .item .nm { font-size: 14px; }
+  #results .item .meta { font-size: 12px; color: var(--text-muted); }
+  #results .none { padding: 10px 12px; color: var(--text-muted); font-size: 13px; }
+  .chip {
+    display: none; margin-top: 10px; padding: 8px 12px; border-radius: 8px;
+    background: var(--series-1-soft); border: 1px solid var(--border); font-size: 14px;
+  }
+  .chip .lbl { color: var(--text-secondary); font-size: 12.5px; margin-right: 6px; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 7px; margin: 3px 6px 3px 0;
+    padding: 4px 6px 4px 11px; border-radius: 999px; font-size: 13.5px;
+    background: var(--surface-1); border: 1px solid var(--border);
+  }
+  .pill b { color: var(--series-1); font-weight: 600; }
+  .pill .meta { color: var(--text-muted); font-size: 11.5px; }
+  .pill button {
+    border: none; background: var(--surface-2); color: var(--text-secondary);
+    width: 18px; height: 18px; border-radius: 50%; cursor: pointer; font-size: 11px;
+    line-height: 1; padding: 0;
+  }
+  .pill button:hover { background: var(--danger); color: var(--surface-1); }
+
+  /* ── kontroller ── */
+  .controls { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end; margin-top: 14px; }
+  .controls input[type="date"] {
+    padding: 7px 10px; border: 1px solid var(--border); border-radius: 8px;
+    background: var(--surface-2); color: var(--text-primary); font-size: 14px;
+  }
+  .quick { display: flex; gap: 6px; flex-wrap: wrap; }
+  .quick button {
+    border: 1px solid var(--border); background: var(--surface-2); color: var(--text-secondary);
+    border-radius: 999px; padding: 5px 11px; font-size: 12.5px; cursor: pointer;
+  }
+  .quick button:hover { color: var(--text-primary); border-color: var(--text-muted); }
+  #fetchBtn {
+    background: var(--accent-bg); color: var(--accent-fg); border: none; border-radius: 8px;
+    padding: 9px 20px; font-size: 15px; font-weight: 600; cursor: pointer;
+  }
+  #fetchBtn:disabled { opacity: .45; cursor: default; }
+  .dl { display: flex; gap: 8px; margin-left: auto; }
+  .dl button {
+    border: 1px solid var(--border); background: var(--surface-2); color: var(--text-primary);
+    border-radius: 8px; padding: 8px 14px; font-size: 13.5px; cursor: pointer;
+  }
+  .dl button:disabled { opacity: .4; cursor: default; }
+  .note { font-size: 12.5px; color: var(--text-muted); margin-top: 10px; }
+  .error { color: var(--danger); font-size: 14px; margin-top: 10px; display: none; }
+
+  /* ── istatistik kutuları ── */
+  .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+  @media (max-width: 760px) { .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .stat { background: var(--surface-2); border-radius: 10px; padding: 10px 14px; }
+  .stat .k { font-size: 12px; color: var(--text-secondary); }
+  .stat .v { font-size: 20px; font-weight: 650; margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .stat .s { font-size: 11.5px; color: var(--text-muted); }
+
+  /* ── grafik ── */
+  .chart-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
+  .chart-head h2 { font-size: 15px; margin: 0; font-weight: 600; }
+  .chart-head .range { color: var(--text-muted); font-size: 12.5px; }
+  .seg { display: flex; margin-left: auto; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+  .seg button {
+    border: none; background: var(--surface-1); color: var(--text-secondary);
+    padding: 5px 13px; font-size: 12.5px; cursor: pointer;
+  }
+  .seg button.on { background: var(--series-1-soft); color: var(--series-1); font-weight: 600; }
+  #chartBox { position: relative; }
+  #chart { width: 100%; display: block; }
+  #tooltip {
+    position: absolute; pointer-events: none; display: none; z-index: 10;
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 8px;
+    padding: 6px 10px; font-size: 12.5px; box-shadow: 0 4px 14px rgba(0,0,0,.18); white-space: nowrap;
+  }
+  #tooltip .t { color: var(--text-secondary); }
+  #tooltip .v { font-weight: 650; font-variant-numeric: tabular-nums; }
+  .placeholder { color: var(--text-muted); text-align: center; padding: 70px 0; font-size: 14px; }
+  .spin {
+    display: inline-block; width: 15px; height: 15px; border-radius: 50%;
+    border: 2px solid var(--accent-fg); border-top-color: transparent;
+    animation: sp 0.8s linear infinite; vertical-align: -3px; margin-right: 7px;
+  }
+  @keyframes sp { to { transform: rotate(360deg); } }
+
+  /* ── tablo ── */
+  #tableBox { display: none; }
+  #tableBox, #cfBox { max-height: 420px; overflow: auto; border: 1px solid var(--border); border-radius: 8px; }
+  #cfBox:empty { border: none; }
+  #tableBox table, #cfBox table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+  #tableBox th, #tableBox td, #cfBox th, #cfBox td { padding: 6px 12px; text-align: right; border-bottom: 1px solid var(--border); }
+  #tableBox th:first-child, #tableBox td:first-child,
+  #cfBox th:first-child, #cfBox td:first-child { text-align: left; }
+  #tableBox th, #cfBox th { position: sticky; top: 0; background: var(--surface-2); color: var(--text-secondary); font-weight: 600; }
+  .cfbar { display: inline-block; width: 110px; height: 8px; border-radius: 4px; background: var(--surface-2); vertical-align: 1px; margin-right: 8px; overflow: hidden; }
+  .cfbar i { display: block; height: 100%; background: var(--series-1); border-radius: 4px; }
+  footer { color: var(--text-muted); font-size: 12px; margin-top: 24px; text-align: center; }
+  @media (max-width: 640px) { .dl { margin-left: 0; } }
+</style>
+</head>
+<body>
+
+<div id="loginOverlay">
+  <div class="login-card">
+    <h1>⚡ Elektrik Verileri</h1>
+    <div class="tag">Santral bazlı üretim paneli — EPİAŞ Şeffaflık verisiyle</div>
+    <label class="small" for="lEmail">EPİAŞ Şeffaflık e-posta adresi</label>
+    <input id="lEmail" type="email" autocomplete="username" placeholder="ornek@kurum.com">
+    <label class="small" for="lPass">EPİAŞ şifresi</label>
+    <input id="lPass" type="password" autocomplete="current-password" placeholder="••••••••">
+    <button id="loginBtn">Giriş yap</button>
+    <div id="loginErr"></div>
+    <div class="login-note">
+      Bu site verileri <b>sizin EPİAŞ Şeffaflık hesabınızla</b> çeker. Hesabınız yoksa
+      <a href="https://kayit.epias.com.tr" target="_blank" rel="noopener">kayit.epias.com.tr</a>
+      adresinden ücretsiz açabilirsiniz.<br><br>
+      Gizlilik: bilgileriniz yalnızca giriş anında EPİAŞ'a iletilir; bu sitede ve aracı
+      sunucuda <b>saklanmaz, loglanmaz</b>. Oturum anahtarı yalnızca bu sekmede tutulur.
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <header>
+    <h1>Santral Üretim Paneli</h1>
+    <span class="sub">EPİAŞ Şeffaflık · saatlik gerçek zamanlı üretim</span>
+    <div class="hbtns">
+      <span class="sub" id="whoami"></span>
+      <button id="themeBtn" title="Tema değiştir">◐ Tema</button>
+      <button id="logoutBtn">Çıkış</button>
+    </div>
+  </header>
+
+  <div class="card">
+    <label class="small" for="q">Santral ara (ad, kısa ad veya EIC)</label>
+    <div class="searchbox">
+      <input id="q" type="text" placeholder="Örn. CENAL, ATATÜRK HES… (seçtikten sonra ikinci santrali de ekleyebilirsiniz)" autocomplete="off">
+      <div id="results"></div>
+    </div>
+    <div class="chip" id="chip"></div>
+
+    <div class="controls">
+      <div>
+        <label class="small" for="d1">Başlangıç</label>
+        <input type="date" id="d1">
+      </div>
+      <div>
+        <label class="small" for="d2">Bitiş</label>
+        <input type="date" id="d2">
+      </div>
+      <div>
+        <label class="small">Hızlı aralık</label>
+        <div class="quick">
+          <button data-r="year">Bu yıl</button>
+          <button data-r="month">Bu ay</button>
+          <button data-r="week">Bu hafta</button>
+        </div>
+      </div>
+      <button id="fetchBtn" disabled>Veriyi getir</button>
+      <div class="dl">
+        <button id="dlx" disabled>⬇ Excel</button>
+        <button id="dlc" disabled>⬇ CSV</button>
+      </div>
+    </div>
+    <div class="note" id="statusNote">Giriş bekleniyor…</div>
+    <div class="error" id="errBox"></div>
+  </div>
+
+  <div class="card" id="statsCard" style="display:none">
+    <div class="stats">
+      <div class="stat"><div class="k">Toplam üretim</div><div class="v" id="stTotal">–</div><div class="s" id="stTotalSub"></div></div>
+      <div class="stat"><div class="k">Ortalama saatlik</div><div class="v" id="stAvg">–</div><div class="s">MWh</div></div>
+      <div class="stat"><div class="k">En yüksek saat</div><div class="v" id="stMax">–</div><div class="s" id="stMaxSub"></div></div>
+      <div class="stat"><div class="k">En düşük saat</div><div class="v" id="stMin">–</div><div class="s" id="stMinSub"></div></div>
+      <div class="stat"><div class="k">Kayıt</div><div class="v" id="stCount">–</div><div class="s" id="stCountSub"></div></div>
+      <div class="stat"><div class="k">Kapasite faktörü</div><div class="v" id="stCf">–</div><div class="s" id="stCfSub"></div></div>
+      <div class="stat"><div class="k">Sıfır üretim saatleri</div><div class="v" id="stZero">–</div><div class="s" id="stZeroSub"></div></div>
+      <div class="stat"><div class="k">Türkiye üretimindeki payı</div><div class="v" id="stShare">–</div><div class="s" id="stShareSub"></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="chart-head">
+      <h2 id="chartTitle">Üretim</h2>
+      <span class="range" id="chartRange"></span>
+      <div class="seg" id="viewSeg">
+        <button data-v="hour">Saatlik</button>
+        <button data-v="day">Günlük</button>
+        <button data-v="month">Aylık</button>
+        <button data-v="table">Tablo</button>
+      </div>
+    </div>
+    <div id="chartBox">
+      <svg id="chart" height="380"></svg>
+      <div id="tooltip"></div>
+      <div class="placeholder" id="placeholder">Bir santral seçip “Veriyi getir”e basın.</div>
+    </div>
+    <div id="tableBox"></div>
+    <div class="note">Kaynak: EPİAŞ Şeffaflık Platformu, gerçek zamanlı üretim (uzlaştırmaya esas değildir).
+      Santral bazlı veri en geç <b>düne kadar</b> yayımlanır. Uzun aralıklar 90 günlük parçalar hâlinde
+      çekilir; birkaç yıllık sorgular biraz sürebilir. İndirme dosyaları her zaman saatlik ham veridir.</div>
+  </div>
+
+  <div class="card" id="cfCard" style="display:none">
+    <div class="chart-head">
+      <h2 id="cfTitle">Yıllık kapasite faktörü (2020–2026)</h2>
+      <span class="range" id="cfInfo"></span>
+    </div>
+    <div id="cfBox"></div>
+    <div class="note">KF = yıllık üretim ÷ (işletmedeki kapasite × yılın saat sayısı). Kapasite,
+      EPDK lisans listesindeki güncel “işletmedeki kapasite (MWe)” değeridir ve tüm yıllar için sabit
+      varsayılır; santral aşamalı devreye girdiyse ilk yılların KF'si düşük görünür.
+      * işaretli yıl devam ediyor (düne kadar). Sonuçlar tarayıcınızda önbelleğe alınır.</div>
+  </div>
+
+  <footer>elektrikverileri.com · Veri: EPİAŞ Şeffaflık Platformu · Kapasite: EPDK lisans listesi ·
+    Bu site resmî bir EPİAŞ/EPDK sitesi değildir.</footer>
+</div>
+
+<script>
+"use strict";
+/* ═══════════ AYAR ═══════════
+   Cloudflare Worker adresi — kurulumdan sonra kendi worker adresinizle değiştirin. */
+const WORKER_URL = "https://elektrikverileri-api.bahadirsgumus.workers.dev";
+const API = (new URLSearchParams(location.search).get("api") || WORKER_URL).replace(/\/+$/, "");
+const CF_START_YEAR = 2020;
+const TR_ANNUAL_TWH = 354; // Türkiye yıllık üretim varsayımı (pay kartı)
+const CHUNK_DAYS = 89;     // EPİAŞ üretim uçları en fazla 90 günlük aralık kabul ediyor
+
+const $ = id => document.getElementById(id);
+const fmt = (v, d=0) => v == null ? "–" : v.toLocaleString("tr-TR", {maximumFractionDigits: d, minimumFractionDigits: d});
+const AYLAR = ["Oca","Şub","Mar","Nis","May","Haz","Tem","Ağu","Eyl","Eki","Kas","Ara"];
+const esc = s => (s || "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* ── durum ── */
+const state = {
+  plants: [],
+  licenses: [],
+  sel: [],
+  items: [],
+  perPlant: {},          // plantId → [{date,total}] (çoklu indirme kolonları için)
+  fetchedFor: null,
+  view: "hour",
+  activeIdx: -1,
+  capMap: {},
+  cfFor: null,
+};
+
+/* ── tema ── */
+const root = document.documentElement;
+function applyTheme(t) { root.setAttribute("data-theme", t); localStorage.setItem("evTheme", t); if (state.items.length) render(); }
+applyTheme(localStorage.getItem("evTheme") ||
+  (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
+$("themeBtn").onclick = () => applyTheme(root.getAttribute("data-theme") === "dark" ? "light" : "dark");
+
+/* ═══════════ OTURUM / EPİAŞ API ═══════════
+   Şifre yalnızca bu sekmenin belleğinde tutulur (yenileme için); hiçbir yere yazılmaz. */
+let CREDS = null;
+let TGT = { v: null, ts: 0 };
+const TGT_MAX_AGE = 50 * 60e3;
+
+async function apiLogin(email, pass) {
+  const r = await fetch(API + "/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username: email, password: pass }),
+  });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok || !j.tgt) throw new Error(j.error || "Giriş başarısız");
+  TGT = { v: j.tgt, ts: Date.now() };
+  CREDS = { email, pass };
+}
+
+async function ensureTgt() {
+  if (TGT.v && Date.now() - TGT.ts < TGT_MAX_AGE) return TGT.v;
+  if (!CREDS) { showLogin(); throw new Error("Oturum gerekli"); }
+  await apiLogin(CREDS.email, CREDS.pass);
+  return TGT.v;
+}
+
+async function epias(path, payload, retry = true) {
+  const t = await ensureTgt();
+  const r = await fetch(API + "/epias", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "X-TGT": t },
+    body: JSON.stringify({ path, payload }),
+  });
+  if ((r.status === 401 || r.status === 403) && retry && CREDS) {
+    TGT = { v: null, ts: 0 };
+    return epias(path, payload, false);
+  }
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) {
+    const detail = j.errors ? JSON.stringify(j.errors) : (j.error || j.message || ("HTTP " + r.status));
+    throw new Error("EPİAŞ: " + detail);
+  }
+  return j;
+}
+
+/* ── giriş ekranı ── */
+function showLogin() { $("loginOverlay").style.display = "flex"; }
+function hideLogin() { $("loginOverlay").style.display = "none"; }
+
+$("loginBtn").onclick = doLogin;
+$("lPass").addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
+async function doLogin() {
+  const email = $("lEmail").value.trim(), pass = $("lPass").value;
+  const err = $("loginErr");
+  err.style.display = "none";
+  if (!email || !pass) { err.textContent = "E-posta ve şifre girin."; err.style.display = "block"; return; }
+  const btn = $("loginBtn");
+  btn.disabled = true; btn.textContent = "Giriş yapılıyor…";
+  try {
+    await apiLogin(email, pass);
+    $("lPass").value = "";
+    hideLogin();
+    $("whoami").textContent = email;
+    init();
+  } catch (e) {
+    err.textContent = e.message;
+    err.style.display = "block";
+  } finally {
+    btn.disabled = false; btn.textContent = "Giriş yap";
+  }
+}
+$("logoutBtn").onclick = () => { CREDS = null; TGT = { v: null, ts: 0 }; location.reload(); };
+
+/* ── tarih yardımcıları ── */
+const iso = d => d.toISOString().slice(0, 10);
+function trtToday() { return new Date(Date.now() + 3*3600e3).toISOString().slice(0, 10); }
+// Santral bazlı üretim verisi en geç DÜNE kadar yayımlanıyor (EPİAŞ kuralı)
+function yesterday() { return new Date(Date.now() + 3*3600e3 - 86400e3).toISOString().slice(0, 10); }
+function setRange(days) {
+  const end = yesterday();
+  const s = new Date(end); s.setDate(s.getDate() - (days - 1));
+  $("d1").value = iso(s); $("d2").value = end;
+}
+$("d2").max = yesterday(); $("d1").max = yesterday();
+setRange(30);
+document.querySelectorAll(".quick button").forEach(b => {
+  b.onclick = () => {
+    const end = yesterday();
+    let s;
+    if (b.dataset.r === "year") s = end.slice(0,4) + "-01-01";
+    else if (b.dataset.r === "month") s = end.slice(0,8) + "01";
+    else {
+      const d = new Date(end);
+      d.setUTCDate(d.getUTCDate() - (d.getUTCDay() + 6) % 7);
+      s = iso(d);
+    }
+    $("d1").value = s; $("d2").value = end;
+  };
+});
+
+/* ═══════════ SANTRAL LİSTESİ ═══════════ */
+async function loadPlants() {
+  const today = trtToday();
+  try {
+    const c = JSON.parse(localStorage.getItem("evPlants"));
+    if (c && c.day === today && c.plants.length) { state.plants = c.plants; return; }
+  } catch {}
+  const year = +today.slice(0, 4);
+  const days = [today];
+  for (let i = 0; i < 6; i++) days.push(`${year - i}-01-01`); // kapanmış santraller de bulunsun
+  const merged = new Map();
+  for (let i = 0; i < days.length; i++) {
+    $("statusNote").textContent = `Santral listesi çekiliyor… (${i + 1}/${days.length})`;
+    try {
+      const j = await epias("generation/data/powerplant-list-for-date-range", {
+        startDate: days[i] + "T00:00:00+03:00",
+        endDate: days[i] + "T23:59:59+03:00",
+      });
+      for (const p of j.items || []) {
+        if (p.id != null && !merged.has(p.id)) {
+          merged.set(p.id, { id: p.id, name: p.name, shortName: p.shortName, eic: p.eic });
+        }
+      }
+    } catch (e) {
+      if (!merged.size) throw e; // ilk gün de düştüyse gerçek hata
+    }
+  }
+  state.plants = [...merged.values()].sort((a, b) => (a.name || "").localeCompare(b.name || "", "tr"));
+  try { localStorage.setItem("evPlants", JSON.stringify({ day: today, plants: state.plants })); } catch {}
+}
+
+/* ═══════════ LİSANS EŞLEŞTİRME (EPDK) ═══════════ */
+const TRMAP = { "ç":"c","ğ":"g","ı":"i","ö":"o","ş":"s","ü":"u","â":"a","î":"i","û":"u","i̇":"i" };
+const ROMAN = { i:"1", ii:"2", iii:"3", iv:"4", v:"5", vi:"6", vii:"7", viii:"8", ix:"9", x:"10" };
+const STOP = new Set(["tes","hes","res","ges","jes","bes","dgkcs","dgccs","dgcc","ngcc","ccgt",
+  "santral","santrali","santralleri","enerji","elektrik","uretim","uretimi",
+  "termik","hidroelektrik","ruzgar","gunes","jeotermal","biyokutle","biyogaz","biogaz","biogas",
+  "dogal","dogalgaz","gaz","kombine","cevrim","grubu","grup","tesisi","tesis",
+  "as","a","s","ve","ltd","sti"]);
+const TYPE = { hes:"hidro", baraji:"hidro", hidroelektrik:"hidro", baraj:"hidro",
+  res:"ruzgar", ruzgar:"ruzgar", ges:"gunes", gunes:"gunes", jes:"jeo", jeotermal:"jeo",
+  bes:"biyo", biyokutle:"biyo", biyogaz:"biyo", biogaz:"biyo", biogas:"biyo",
+  tes:"termik", termik:"termik", dgkcs:"gaz", dgccs:"gaz", dgcc:"gaz", ngcc:"gaz", ccgt:"gaz",
+  dogalgaz:"gaz", kombine:"gaz", komur:"komur", linyit:"komur" };
+const THERMAL = new Set(["termik", "gaz", "komur"]);
+
+function tokens(s) {
+  s = (s || "").toLocaleLowerCase("tr-TR").replace(/[çğıöşüâîûi̇]/g, c => TRMAP[c] || c);
+  return (s.match(/[a-z]+|[0-9]+/g) || []).map(t => ROMAN[t] || t);
+}
+function typesOf(toks) {
+  const out = new Set();
+  for (const t of toks) if (TYPE[t]) out.add(TYPE[t]);
+  return out;
+}
+function typeScore(a, b) {
+  if (!a.size || !b.size) return 0;
+  for (const x of a) if (b.has(x)) return 2;
+  let at = false, bt = false;
+  for (const x of a) if (THERMAL.has(x)) at = true;
+  for (const x of b) if (THERMAL.has(x)) bt = true;
+  return at && bt ? 1 : -3; // TES ↔ doğalgaz çelişki sayılmaz; RES ↔ biyo gibi çelişkiler elenir
+}
+function matchLicense(...names) {
+  const q = [];
+  for (const n of names) {
+    for (const t of tokens(n)) {
+      if ((/^\d+$/.test(t) && t.length > 2) || t.length > 14) continue; // EIC/ID parçaları
+      if (!q.includes(t)) q.push(t);
+    }
+  }
+  const sig = q.filter(t => !STOP.has(t) && !/^\d+$/.test(t));
+  if (!sig.length) return null;
+  const qTypes = typesOf(q);
+  let best = null, bestScore = 0;
+  for (const lic of state.licenses) {
+    let mSig = 0;
+    for (const t of sig) if (lic.t.has(t)) mSig++;
+    if (!mSig) continue;
+    const ts = typeScore(qTypes, lic.ty);
+    if (ts < 0) continue;
+    let mAll = 0;
+    for (const t of q) if (lic.t.has(t)) mAll++;
+    let licSigN = 0, licSigHit = 0;
+    for (const t of lic.t) if (!STOP.has(t)) { licSigN++; if (q.includes(t)) licSigHit++; }
+    const coverage = licSigN ? licSigHit / licSigN : 0;
+    let score = mSig * 10 + mAll * 2 + coverage * 2 - lic.t.size * 0.05 + ts;
+    if (lic.s) score += 0.5;
+    if (lic.c > 0) score += 0.25;
+    if (score > bestScore) { best = lic; bestScore = score; }
+  }
+  return best;
+}
+// Seçimin birleşik kapasitesi: aynı lisansa düşen kardeş santraller tek sayılır
+function combinedCapacity() {
+  const seen = new Map();
+  let pending = false, unmatched = 0;
+  for (const p of state.sel) {
+    const m = state.capMap[p.id];
+    if (m === undefined) pending = true;
+    else if (m === null) unmatched++;
+    else seen.set(m.n, m.c);
+  }
+  let cap = 0;
+  for (const v of seen.values()) cap += v;
+  return {
+    pending, unmatched,
+    capacityMw: cap || null,
+    licenseNames: [...seen.keys()],
+    merged: seen.size > 0 && state.sel.length - unmatched > seen.size,
+  };
+}
+async function loadLicenses() {
+  const r = await fetch("licenses.json");
+  const raw = await r.json();
+  state.licenses = raw.map(l => {
+    const t = new Set(tokens(l.n));
+    return { n: l.n, c: l.c, s: l.s, t, ty: typesOf(t) };
+  });
+}
+
+/* ═══════════ ÜRETİM VERİSİ (parçalı çekim) ═══════════ */
+async function fetchGenOne(plantId, startDay, endDay, onChunk) {
+  const out = [];
+  let cur = new Date(startDay);
+  const end = new Date(endDay);
+  while (cur <= end) {
+    const chunkEnd = new Date(Math.min(cur.getTime() + (CHUNK_DAYS) * 86400e3, end.getTime()));
+    if (onChunk) onChunk(iso(cur), iso(chunkEnd));
+    const j = await epias("generation/data/realtime-generation", {
+      startDate: iso(cur) + "T00:00:00+03:00",
+      endDate: iso(chunkEnd) + "T23:59:59+03:00",
+      powerPlantId: plantId,
+    });
+    for (const it of j.items || []) if (it.date) out.push({ date: it.date, total: it.total });
+    cur = new Date(chunkEnd.getTime() + 86400e3);
+  }
+  // sırala + mükerrer saati at
+  out.sort((a, b) => a.date < b.date ? -1 : 1);
+  const seen = new Set(), dedup = [];
+  for (const it of out) if (!seen.has(it.date)) { seen.add(it.date); dedup.push(it); }
+  return dedup;
+}
+
+async function fetchGenerationMulti(plants, startDay, endDay, onProgress) {
+  const per = {};
+  for (let i = 0; i < plants.length; i++) {
+    const p = plants[i];
+    per[p.id] = await fetchGenOne(p.id, startDay, endDay, () => {
+      if (onProgress) onProgress(`${p.shortName || p.name} çekiliyor… (${i + 1}/${plants.length})`);
+    });
+  }
+  if (plants.length === 1) return { items: per[plants[0].id], per };
+  const merged = new Map();
+  for (const items of Object.values(per)) {
+    for (const it of items) merged.set(it.date, (merged.get(it.date) || 0) + (it.total || 0));
+  }
+  const items = [...merged.entries()].sort((a, b) => a[0] < b[0] ? -1 : 1)
+    .map(([date, total]) => ({ date, total }));
+  return { items, per };
+}
+
+/* ═══════════ ARAMA / SEÇİM ═══════════ */
+const trFold = s => tokens(s).join(" ");
+function matches(q) {
+  const f = trFold(q);
+  return state.plants.filter(p =>
+    !state.sel.some(s => s.id === p.id) &&
+    (trFold(p.name).includes(f) || trFold(p.shortName).includes(f) || (p.eic || "").toLowerCase().includes(q.toLowerCase()))
+  ).slice(0, 40);
+}
+function renderResults(list) {
+  const box = $("results");
+  state.activeIdx = -1;
+  if (!list) { box.style.display = "none"; box.innerHTML = ""; return; }
+  if (!list.length) { box.innerHTML = '<div class="none">Sonuç yok.</div>'; box.style.display = "block"; return; }
+  box.innerHTML = list.map((p, i) =>
+    `<div class="item" data-i="${i}"><div class="nm">${esc(p.name)}</div>` +
+    `<div class="meta">${esc(p.shortName || "")} · ID ${p.id}${p.eic ? " · " + esc(p.eic) : ""}</div></div>`
+  ).join("");
+  box.style.display = "block";
+  box.querySelectorAll(".item").forEach(el => el.onclick = () => selectPlant(list[+el.dataset.i]));
+  box._list = list;
+}
+$("q").addEventListener("input", () => {
+  const q = $("q").value.trim();
+  renderResults(q.length >= 2 ? matches(q) : null);
+});
+$("q").addEventListener("keydown", e => {
+  const box = $("results"), list = box._list || [];
+  if (box.style.display !== "block" || !list.length) return;
+  if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+    e.preventDefault();
+    state.activeIdx = (state.activeIdx + (e.key === "ArrowDown" ? 1 : -1) + list.length) % list.length;
+    box.querySelectorAll(".item").forEach((el, i) => el.classList.toggle("active", i === state.activeIdx));
+    box.querySelectorAll(".item")[state.activeIdx].scrollIntoView({ block: "nearest" });
+  } else if (e.key === "Enter" && state.activeIdx >= 0) {
+    e.preventDefault(); selectPlant(list[state.activeIdx]);
+  } else if (e.key === "Escape") renderResults(null);
+});
+document.addEventListener("click", e => { if (!e.target.closest(".searchbox")) renderResults(null); });
+
+function selectPlant(p) {
+  renderResults(null);
+  $("q").value = "";
+  if (!state.sel.some(s => s.id === p.id)) {
+    state.sel.push(p);
+    const lic = matchLicense(p.shortName || "", p.name || "");
+    state.capMap[p.id] = (lic && lic.c) ? { n: lic.n, c: lic.c } : null;
+  }
+  renderSelection();
+  if (state.items.length) updateStats();
+}
+function removePlant(id) {
+  state.sel = state.sel.filter(s => s.id !== id);
+  delete state.capMap[id];
+  renderSelection();
+  if (state.items.length) updateStats();
+}
+function renderSelection() {
+  const chip = $("chip");
+  if (!state.sel.length) {
+    chip.style.display = "none";
+    $("fetchBtn").disabled = true;
+    return;
+  }
+  chip.style.display = "block";
+  chip.innerHTML = `<span class="lbl">Seçili santral${state.sel.length > 1 ? "ler (üretim toplanır)" : ""}:</span>` +
+    state.sel.map(p =>
+      `<span class="pill"><b>${esc(p.shortName || p.name)}</b>` +
+      `<span class="meta">ID ${p.id}</span>` +
+      `<button title="Kaldır" data-id="${p.id}">✕</button></span>`
+    ).join("");
+  chip.querySelectorAll("button").forEach(b => b.onclick = () => removePlant(+b.dataset.id));
+  $("fetchBtn").disabled = false;
+}
+
+/* ═══════════ VERİ ÇEKME ═══════════ */
+function showError(msg) { const b = $("errBox"); b.textContent = msg; b.style.display = msg ? "block" : "none"; }
+
+$("fetchBtn").onclick = async () => {
+  if (!state.sel.length) return;
+  let start = $("d1").value, end = $("d2").value;
+  if (!start || !end) { showError("Başlangıç ve bitiş tarihlerini seçin."); return; }
+  if (start > end) [start, end] = [end, start];
+  const y = yesterday();
+  if (end > y) end = y;
+  if (start > y) start = y;
+  showError("");
+  const btn = $("fetchBtn");
+  btn.disabled = true;
+  const plants = [...state.sel];
+  try {
+    const { items, per } = await fetchGenerationMulti(plants, start, end, msg => {
+      btn.innerHTML = '<span class="spin"></span>' + esc(msg);
+    });
+    state.items = items;
+    state.perPlant = per;
+    state.fetchedFor = {
+      plantIds: plants.map(p => p.id).join(","), plants, start, end,
+      name: plants.map(p => p.shortName || p.name).join(" + "),
+    };
+    autoView(start, end);
+    render();
+    $("dlx").disabled = $("dlc").disabled = !items.length;
+    updateStats();
+    loadYearlyCf();
+  } catch (e) {
+    showError("Veri alınamadı: " + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Veriyi getir";
+  }
+};
+
+/* ═══════════ İSTATİSTİKLER ═══════════ */
+function updateStats() {
+  const it = state.items;
+  $("statsCard").style.display = "block";
+  if (!it.length) {
+    for (const id of ["stTotal","stAvg","stMax","stMin","stCount","stCf","stZero","stShare"]) $(id).textContent = "–";
+    for (const id of ["stTotalSub","stMaxSub","stMinSub","stCountSub","stCfSub","stZeroSub","stShareSub"]) $(id).textContent = "";
+    return;
+  }
+  let total = 0, maxI = 0, minI = 0, zeros = 0;
+  for (let i = 0; i < it.length; i++) {
+    const v = it[i].total || 0;
+    total += v;
+    if (v > (it[maxI].total || 0)) maxI = i;
+    if (v < (it[minI].total || 0)) minI = i;
+    if (v <= 0) zeros++;
+  }
+  const f = state.fetchedFor;
+  const hoursSpan = Math.round((new Date(f.end + "T23:59:59+03:00") - new Date(f.start + "T00:00:00+03:00")) / 3600e3);
+  const gwh = total >= 10000;
+  $("stTotal").textContent = fmt(gwh ? total/1000 : total, gwh ? 1 : 0);
+  $("stTotalSub").textContent = gwh ? "GWh" : "MWh";
+  $("stAvg").textContent = fmt(total / it.length, 1);
+  $("stMax").textContent = fmt(it[maxI].total || 0, 1);
+  $("stMaxSub").textContent = "MWh · " + labelHour(it[maxI].date);
+  $("stMin").textContent = fmt(it[minI].total || 0, 1);
+  $("stMinSub").textContent = "MWh · " + labelHour(it[minI].date);
+  $("stCount").textContent = fmt(it.length);
+  $("stCountSub").textContent = "saat · kapsam %" + fmt(Math.min(100, it.length / hoursSpan * 100), 0);
+  const cc = combinedCapacity();
+  if (cc.capacityMw) {
+    $("stCf").textContent = "%" + fmt(total / (cc.capacityMw * hoursSpan) * 100, 1);
+    let sub = fmt(cc.capacityMw, 1) + " MWe · " + cc.licenseNames.join(" + ");
+    if (cc.merged) sub += " · ortak lisans tek sayıldı";
+    if (cc.unmatched) sub += ` · ${cc.unmatched} santral eşleşmedi`;
+    $("stCfSub").textContent = sub;
+  } else {
+    $("stCf").textContent = "–";
+    $("stCfSub").textContent = cc.pending ? "kapasite aranıyor…" : "Lisans listesinde eşleşme yok";
+  }
+  $("stZero").textContent = "%" + fmt(zeros / it.length * 100, 1);
+  $("stZeroSub").textContent = fmt(zeros) + " / " + fmt(it.length) + " saat";
+  const trPeriodMwh = TR_ANNUAL_TWH * 1e6 * hoursSpan / 8760;
+  $("stShare").textContent = "%" + fmt(total / trPeriodMwh * 100, 2);
+  $("stShareSub").textContent = `TR üretimi ${TR_ANNUAL_TWH} TWh/yıl varsayımı, döneme oranlı`;
+}
+
+/* ═══════════ YILLIK KAPASİTE FAKTÖRÜ ═══════════ */
+async function loadYearlyCf() {
+  const f = state.fetchedFor;
+  if (!f || state.cfFor === f.plantIds) return;
+  state.cfFor = f.plantIds;
+  $("cfCard").style.display = "block";
+  $("cfInfo").textContent = "";
+  const box = $("cfBox");
+  box.innerHTML = '<div class="placeholder" id="cfProg">Hesaplanıyor…</div>';
+  const prog = msg => { const p = $("cfProg"); if (p) p.textContent = msg; };
+  try {
+    const curYear = +trtToday().slice(0, 4);
+    const yest = yesterday();
+    const perYear = new Map();
+    for (const p of f.plants) {
+      for (let y = CF_START_YEAR; y <= curYear; y++) {
+        const endDay = y < curYear ? `${y}-12-31` : yest;
+        if (endDay < `${y}-01-01`) continue;
+        const hours = Math.round((new Date(endDay) - new Date(`${y}-01-01`)) / 86400e3) * 24 + 24;
+        const key = `evCf:${p.id}:${y}`;
+        let ent = null;
+        try { ent = JSON.parse(localStorage.getItem(key)); } catch {}
+        const valid = ent && (ent.complete || ent.asof === yest);
+        if (!valid) {
+          prog(`${p.shortName || p.name} · ${y} verisi çekiliyor… (ilk seferde uzun sürebilir)`);
+          const items = await fetchGenOne(p.id, `${y}-01-01`, endDay);
+          let mwh = 0;
+          for (const it of items) mwh += it.total || 0;
+          ent = { mwh, records: items.length, complete: y < curYear, asof: yest };
+          try { localStorage.setItem(key, JSON.stringify(ent)); } catch {}
+        }
+        const e = perYear.get(y) || { year: y, mwh: 0, records: 0, hours, partial: y === curYear };
+        e.mwh += ent.mwh;
+        e.records = Math.max(e.records, ent.records);
+        perYear.set(y, e);
+      }
+    }
+    if (state.fetchedFor?.plantIds !== f.plantIds) return;
+    const cc = combinedCapacity();
+    const years = [...perYear.values()].sort((a, b) => a.year - b.year).map(y => ({
+      ...y,
+      cf: (cc.capacityMw && y.records) ? y.mwh / (cc.capacityMw * y.hours) * 100 : null,
+    }));
+    renderCfTable({ capacityMw: cc.capacityMw, licenseNames: cc.licenseNames,
+                    merged: cc.merged, unmatched: cc.unmatched, years }, f);
+  } catch (e) {
+    if (state.cfFor === f.plantIds) state.cfFor = null;
+    box.innerHTML = `<div class="placeholder">Hesaplanamadı: ${esc(e.message)}</div>`;
+  }
+}
+
+function renderCfTable(j, f) {
+  const lastYear = +trtToday().slice(0, 4);
+  $("cfTitle").textContent = `${f.name} — Yıllık kapasite faktörü (${CF_START_YEAR}–${lastYear})`;
+  let info = j.capacityMw
+    ? `Lisans: ${j.licenseNames.join(" + ")} · işletmedeki kapasite ${fmt(j.capacityMw, 1)} MWe`
+    : "Lisans listesinde eşleşme bulunamadı — üretim gösteriliyor, KF hesaplanamıyor";
+  if (j.merged) info += " · ortak lisans tek sayıldı";
+  if (j.unmatched && j.capacityMw) info += ` · ${j.unmatched} santral eşleşmedi`;
+  $("cfInfo").textContent = info;
+  const rows = j.years.map(y => {
+    const cf = (y.cf != null && y.records)
+      ? `<span class="cfbar"><i style="width:${Math.max(0, Math.min(100, y.cf)).toFixed(1)}%"></i></span>%${fmt(y.cf, 1)}`
+      : "–";
+    return `<tr><td>${y.year}${y.partial ? "*" : ""}</td>` +
+           `<td>${y.records ? fmt(y.mwh / 1000, 1) : "–"}</td>` +
+           `<td>${y.records ? fmt(y.records) : "–"}</td>` +
+           `<td>${cf}</td></tr>`;
+  }).join("");
+  $("cfBox").innerHTML = `<table><thead><tr><th>Yıl</th><th>Üretim (GWh)</th><th>Veri (saat)</th><th>Kapasite faktörü</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+/* ═══════════ GÖRÜNÜM / GRAFİK ═══════════ */
+function autoView(start, end) {
+  const days = (new Date(end) - new Date(start)) / 86400e3 + 1;
+  state.view = days <= 31 ? "hour" : days <= 400 ? "day" : "month";
+  syncSeg();
+}
+function syncSeg() {
+  document.querySelectorAll("#viewSeg button").forEach(b => b.classList.toggle("on", b.dataset.v === state.view));
+}
+document.querySelectorAll("#viewSeg button").forEach(b => {
+  b.onclick = () => { state.view = b.dataset.v; syncSeg(); render(); };
+});
+syncSeg();
+
+function labelHour(d) { return d.slice(8,10) + " " + AYLAR[+d.slice(5,7)-1] + " " + d.slice(0,4) + " " + d.slice(11,16); }
+function labelDay(d)  { return d.slice(8,10) + " " + AYLAR[+d.slice(5,7)-1] + " " + d.slice(0,4); }
+function labelMonth(d){ return AYLAR[+d.slice(5,7)-1] + " " + d.slice(0,4); }
+
+function seriesFor(view) {
+  const it = state.items;
+  if (view === "hour") return {pts: it.map(x => ({k: x.date, v: x.total || 0})), lab: labelHour, unit: "MWh", title: "Saatlik üretim"};
+  const keyLen = view === "day" ? 10 : 7;
+  const m = new Map();
+  for (const x of it) {
+    const k = x.date.slice(0, keyLen);
+    m.set(k, (m.get(k) || 0) + (x.total || 0));
+  }
+  const pts = [...m.entries()].map(([k, v]) => ({k, v}));
+  return view === "day"
+    ? {pts, lab: labelDay, unit: "MWh/gün", title: "Günlük üretim"}
+    : {pts, lab: labelMonth, unit: "GWh/ay", title: "Aylık üretim", scale: 1/1000};
+}
+
+function render() {
+  const svg = $("chart"), ph = $("placeholder"), tbl = $("tableBox"), tt = $("tooltip");
+  tt.style.display = "none";
+  if (!state.items.length) {
+    svg.innerHTML = ""; tbl.style.display = "none";
+    ph.style.display = "block";
+    ph.textContent = state.fetchedFor ? "Bu aralıkta veri bulunamadı." : "Bir santral seçip “Veriyi getir”e basın.";
+    $("chartRange").textContent = "";
+    return;
+  }
+  ph.style.display = "none";
+  const f = state.fetchedFor;
+  $("chartTitle").textContent = f.name + " — " + seriesFor(state.view === "table" ? "hour" : state.view).title;
+  $("chartRange").textContent = labelDay(f.start) + " – " + labelDay(f.end);
+
+  if (state.view === "table") { svg.innerHTML = ""; svg.style.display = "none"; renderTable(); return; }
+  svg.style.display = "block"; tbl.style.display = "none";
+  drawChart(seriesFor(state.view));
+}
+
+function renderTable() {
+  const tbl = $("tableBox");
+  const s = seriesFor("day");
+  const rows = s.pts.map(p => `<tr><td>${labelDay(p.k)}</td><td>${fmt(p.v, 1)}</td></tr>`).join("");
+  tbl.innerHTML = `<table><thead><tr><th>Gün</th><th>Üretim (MWh)</th></tr></thead><tbody>${rows}</tbody></table>`;
+  tbl.style.display = "block";
+  $("chartTitle").textContent = state.fetchedFor.name + " — Günlük toplam tablosu";
+}
+
+function drawChart(s) {
+  const svg = $("chart");
+  const css = getComputedStyle(document.documentElement);
+  const C = name => css.getPropertyValue(name).trim();
+  const W = svg.clientWidth || 1000, H = 380;
+  const M = {t: 18, r: 16, b: 40, l: 64};
+  const iw = W - M.l - M.r, ih = H - M.t - M.b;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+
+  const scale = s.scale || 1;
+  const pts = s.pts.map(p => ({k: p.k, v: p.v * scale}));
+  const n = pts.length;
+  let vmax = 0;
+  for (const p of pts) if (p.v > vmax) vmax = p.v;
+  const yMax = niceMax(vmax || 1);
+  const x = i => M.l + (n === 1 ? iw/2 : i / (n-1) * iw);
+  const y = v => M.t + ih - (v / yMax) * ih;
+
+  let out = "";
+  const ticks = 4;
+  for (let t = 0; t <= ticks; t++) {
+    const v = yMax * t / ticks, yy = y(v);
+    out += `<line x1="${M.l}" y1="${yy}" x2="${W-M.r}" y2="${yy}" stroke="${C("--grid")}" stroke-width="1"/>`;
+    out += `<text x="${M.l-8}" y="${yy+4}" text-anchor="end" font-size="11" fill="${C("--text-muted")}">${fmt(v, v < 10 ? 1 : 0)}</text>`;
+  }
+  out += `<text x="${M.l-8}" y="${M.t-6}" text-anchor="end" font-size="11" fill="${C("--text-secondary")}">${s.unit}</text>`;
+  const step = Math.max(1, Math.round(n / 6));
+  for (let i = 0; i < n; i += step) {
+    const lab = state.view === "hour" ? pts[i].k.slice(8,10) + " " + AYLAR[+pts[i].k.slice(5,7)-1]
+              : state.view === "day"  ? pts[i].k.slice(8,10) + " " + AYLAR[+pts[i].k.slice(5,7)-1] + " " + pts[i].k.slice(2,4)
+              : labelMonth(pts[i].k);
+    out += `<text x="${x(i)}" y="${H-14}" text-anchor="middle" font-size="11" fill="${C("--text-muted")}">${lab}</text>`;
+  }
+  if (n > 1) {
+    const line = pts.map((p, i) => (i ? "L" : "M") + x(i).toFixed(1) + " " + y(p.v).toFixed(1)).join("");
+    out += `<path d="${line}L${x(n-1).toFixed(1)} ${y(0)}L${x(0).toFixed(1)} ${y(0)}Z" fill="${C("--series-1-soft")}" stroke="none"/>`;
+    out += `<path d="${line}" fill="none" stroke="${C("--series-1")}" stroke-width="2" stroke-linejoin="round"/>`;
+  } else {
+    out += `<circle cx="${x(0)}" cy="${y(pts[0].v)}" r="4" fill="${C("--series-1")}"/>`;
+  }
+  out += `<line id="xh" x1="0" y1="${M.t}" x2="0" y2="${M.t+ih}" stroke="${C("--text-muted")}" stroke-width="1" stroke-dasharray="3 3" style="display:none"/>`;
+  out += `<circle id="xhDot" r="4.5" fill="${C("--series-1")}" stroke="${C("--surface-1")}" stroke-width="2" style="display:none"/>`;
+  svg.innerHTML = out;
+
+  const box = $("chartBox"), tt = $("tooltip");
+  svg.onmousemove = ev => {
+    const r = svg.getBoundingClientRect();
+    const mx = (ev.clientX - r.left) * (W / r.width);
+    let i = Math.round((mx - M.l) / (n === 1 ? 1 : iw / (n-1)));
+    i = Math.max(0, Math.min(n-1, i));
+    const xh = $("xh"), dot = $("xhDot");
+    xh.setAttribute("x1", x(i)); xh.setAttribute("x2", x(i)); xh.style.display = "block";
+    dot.setAttribute("cx", x(i)); dot.setAttribute("cy", y(pts[i].v)); dot.style.display = "block";
+    tt.innerHTML = `<div class="t">${s.lab(pts[i].k)}</div><div class="v">${fmt(pts[i].v, 1)} ${s.unit}</div>`;
+    tt.style.display = "block";
+    const bw = box.clientWidth, tw = tt.offsetWidth;
+    const px = x(i) / W * r.width;
+    tt.style.left = Math.min(bw - tw - 4, Math.max(4, px + 14)) + "px";
+    tt.style.top = (y(pts[i].v) / H * r.height - 40) + "px";
+  };
+  svg.onmouseleave = () => {
+    $("tooltip").style.display = "none";
+    const xh = $("xh"), dot = $("xhDot");
+    if (xh) xh.style.display = "none";
+    if (dot) dot.style.display = "none";
+  };
+}
+
+function niceMax(v) {
+  const p = Math.pow(10, Math.floor(Math.log10(v)));
+  for (const m of [1, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10]) if (m * p >= v) return m * p;
+  return 10 * p;
+}
+addEventListener("resize", () => { if (state.items.length && state.view !== "table") render(); });
+
+/* ═══════════ İNDİRME (tarayıcıda üretilir) ═══════════ */
+function exportRows() {
+  const f = state.fetchedFor;
+  if (f.plants.length === 1) {
+    const name = f.name;
+    return {
+      headers: ["Tarih", "Saat", "Üretim (MWh)", "Santral"],
+      rows: state.items.map(it => [it.date.slice(0,10), it.date.slice(11,16), it.total, name]),
+    };
+  }
+  const lookups = f.plants.map(p => {
+    const m = new Map();
+    for (const it of state.perPlant[p.id] || []) m.set(it.date, it.total);
+    return m;
+  });
+  return {
+    headers: ["Tarih", "Saat", ...f.plants.map(p => `${p.shortName || p.name} (MWh)`), "Toplam (MWh)"],
+    rows: state.items.map(it =>
+      [it.date.slice(0,10), it.date.slice(11,16), ...lookups.map(m => m.get(it.date) ?? ""), it.total]),
+  };
+}
+function slug(s) {
+  return tokens(s).join("-").slice(0, 60) || "santral";
+}
+function downloadBlob(bytes, name, type) {
+  const url = URL.createObjectURL(new Blob([bytes], { type }));
+  const a = document.createElement("a");
+  a.href = url; a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
+}
+$("dlc").onclick = () => {
+  const f = state.fetchedFor;
+  if (!f) return;
+  const { headers, rows } = exportRows();
+  const csvCell = v => {
+    const s = v == null ? "" : String(v);
+    return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  };
+  const csv = "﻿" + [headers, ...rows].map(r => r.map(csvCell).join(",")).join("\r\n");
+  downloadBlob(new TextEncoder().encode(csv), `${slug(f.name)}_${f.start}_${f.end}.csv`, "text/csv;charset=utf-8");
+};
+$("dlx").onclick = () => {
+  const f = state.fetchedFor;
+  if (!f) return;
+  const { headers, rows } = exportRows();
+  downloadBlob(makeXlsx(headers, rows), `${slug(f.name)}_${f.start}_${f.end}.xlsx`,
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+};
+
+/* xlsx: sıkıştırmasız zip + minimal SpreadsheetML (kütüphanesiz) */
+const CRC_TABLE = (() => {
+  const t = new Uint32Array(256);
+  for (let n = 0; n < 256; n++) {
+    let c = n;
+    for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1;
+    t[n] = c >>> 0;
+  }
+  return t;
+})();
+function crc32(u8) {
+  let c = 0xFFFFFFFF;
+  for (let i = 0; i < u8.length; i++) c = CRC_TABLE[(c ^ u8[i]) & 0xFF] ^ (c >>> 8);
+  return (c ^ 0xFFFFFFFF) >>> 0;
+}
+function zipStore(files) { // files: [name, Uint8Array][]
+  const enc = new TextEncoder();
+  const parts = [], central = [];
+  let offset = 0;
+  const num = (n, bytes) => { const a = new Uint8Array(bytes); for (let i = 0; i < bytes; i++) a[i] = (n >>> (8 * i)) & 0xFF; return a; };
+  for (const [name, data] of files) {
+    const nameB = enc.encode(name);
+    const crc = crc32(data);
+    const local = [num(0x04034b50,4), num(20,2), num(0,2), num(0,2), num(0,2), num(0x5021,2),
+      num(crc,4), num(data.length,4), num(data.length,4), num(nameB.length,2), num(0,2), nameB, data];
+    central.push([num(0x02014b50,4), num(20,2), num(20,2), num(0,2), num(0,2), num(0,2), num(0x5021,2),
+      num(crc,4), num(data.length,4), num(data.length,4), num(nameB.length,2), num(0,2), num(0,2),
+      num(0,2), num(0,2), num(0,4), num(offset,4), nameB]);
+    for (const p of local) { parts.push(p); offset += p.length; }
+  }
+  const cdStart = offset;
+  let cdLen = 0;
+  for (const rec of central) for (const p of rec) { parts.push(p); cdLen += p.length; }
+  parts.push(num(0x06054b50,4), num(0,2), num(0,2), num(files.length,2), num(files.length,2),
+    num(cdLen,4), num(cdStart,4), num(0,2));
+  let total = 0;
+  for (const p of parts) total += p.length;
+  const out = new Uint8Array(total);
+  let pos = 0;
+  for (const p of parts) { out.set(p, pos); pos += p.length; }
+  return out;
+}
+function xmlEsc(s) { return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function colLetter(n) { let s = ""; while (n) { const r = (n - 1) % 26; s = String.fromCharCode(65 + r) + s; n = (n - 1 - r) / 26; } return s; }
+function makeXlsx(headers, rows) {
+  const cell = (r, c, v) => {
+    const ref = colLetter(c) + r;
+    if (v == null || v === "") return "";
+    if (typeof v === "number" && isFinite(v)) return `<c r="${ref}"><v>${v}</v></c>`;
+    return `<c r="${ref}" t="inlineStr"><is><t>${xmlEsc(v)}</t></is></c>`;
+  };
+  let sheet = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+    '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>' +
+    '<row r="1">' + headers.map((h, c) => cell(1, c + 1, h)).join("") + "</row>";
+  rows.forEach((row, i) => {
+    sheet += `<row r="${i + 2}">` + row.map((v, c) => cell(i + 2, c + 1, v)).join("") + "</row>";
+  });
+  sheet += "</sheetData></worksheet>";
+  const contentTypes = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+    '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' +
+    '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>' +
+    '<Default Extension="xml" ContentType="application/xml"/>' +
+    '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>' +
+    '<Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/></Types>';
+  const rels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+    '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>';
+  const workbook = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+    '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" ' +
+    'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">' +
+    '<sheets><sheet name="Üretim" sheetId="1" r:id="rId1"/></sheets></workbook>';
+  const wbRels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+    '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/></Relationships>';
+  const enc = new TextEncoder();
+  return zipStore([
+    ["[Content_Types].xml", enc.encode(contentTypes)],
+    ["_rels/.rels", enc.encode(rels)],
+    ["xl/workbook.xml", enc.encode(workbook)],
+    ["xl/_rels/workbook.xml.rels", enc.encode(wbRels)],
+    ["xl/worksheets/sheet1.xml", enc.encode(sheet)],
+  ]);
+}
+
+/* ═══════════ BAŞLATMA ═══════════ */
+async function init() {
+  try {
+    $("statusNote").textContent = "Lisans listesi yükleniyor…";
+    await loadLicenses();
+    await loadPlants();
+    $("statusNote").textContent = fmt(state.plants.length) + " santral yüklendi. Aramaya başlayın.";
+  } catch (e) {
+    $("statusNote").textContent = "";
+    showError("Başlangıç verileri alınamadı: " + e.message + " — sayfayı yenileyin.");
+  }
+}
+showLogin();
+</script>
+</body>
+</html>

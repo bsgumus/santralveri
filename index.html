@@ -89,6 +89,13 @@
   .login-note { font-size: 12px; color: var(--text-muted); margin-top: 14px; line-height: 1.55; }
   .login-note a { color: var(--series-1); }
   #loginErr { color: var(--danger); font-size: 13.5px; margin-top: 10px; display: none; }
+  .pwwrap { position: relative; }
+  .pwwrap input { padding-right: 42px; }
+  #pwEye {
+    position: absolute; right: 6px; top: 4px; width: 32px; height: 32px; padding: 0;
+    border: none; background: transparent; cursor: pointer; font-size: 15px; opacity: .55;
+  }
+  #pwEye:hover { opacity: 1; }
   .disclaimer {
     border-top: 1px solid var(--border); padding-top: 10px; margin-top: 12px;
     font-size: 11px; color: var(--text-muted); line-height: 1.5;
@@ -216,11 +223,17 @@
       <button class="minibtn" id="langBtnLogin" data-i18n-title="langSwitch">🌐 EN</button>
     </div>
     <div class="tag" data-i18n="loginTag">Santral bazlı üretim paneli — EPİAŞ Şeffaflık verisiyle</div>
-    <label class="small" for="lEmail" data-i18n="lblEmail">EPİAŞ Şeffaflık e-posta adresi</label>
-    <input id="lEmail" type="email" autocomplete="username" placeholder="ornek@kurum.com" data-i18n-ph="phEmail">
-    <label class="small" for="lPass" data-i18n="lblPass">EPİAŞ şifresi</label>
-    <input id="lPass" type="password" autocomplete="current-password" placeholder="••••••••">
-    <button id="loginBtn" data-i18n="btnLogin">Giriş yap</button>
+    <!-- Gerçek form: şifre yöneticileri ancak böyle öngörülebilir çalışır -->
+    <form id="loginForm" autocomplete="on">
+      <label class="small" for="lEmail" data-i18n="lblEmail">EPİAŞ Şeffaflık e-posta adresi</label>
+      <input id="lEmail" name="username" type="email" autocomplete="username" placeholder="ornek@kurum.com" data-i18n-ph="phEmail">
+      <label class="small" for="lPass" data-i18n="lblPass">EPİAŞ şifresi</label>
+      <div class="pwwrap">
+        <input id="lPass" name="password" type="password" autocomplete="current-password" placeholder="••••••••">
+        <button type="button" id="pwEye" data-i18n-title="ttlShowPass" aria-label="show">👁</button>
+      </div>
+      <button type="submit" id="loginBtn" data-i18n="btnLogin">Giriş yap</button>
+    </form>
     <div id="loginErr"></div>
     <div class="login-note" data-i18n-html="loginNote">
       Bu site verileri <b>sizin EPİAŞ Şeffaflık hesabınızla</b> çeker. Hesabınız yoksa
@@ -390,6 +403,9 @@ const I18N = {
     lblPass: "EPİAŞ şifresi",
     btnLogin: "Giriş yap",
     btnLoggingIn: "Giriş yapılıyor…",
+    ttlShowPass: "Şifreyi göster",
+    ttlHidePass: "Şifreyi gizle",
+    hintSpace: "(İpucu: alanların başında/sonunda boşluk var — yapıştırırken gelmiş olabilir.)",
     loginNote: 'Bu site verileri <b>sizin EPİAŞ Şeffaflık hesabınızla</b> çeker. Hesabınız yoksa ' +
       '<a href="https://kayit.epias.com.tr" target="_blank" rel="noopener">kayit.epias.com.tr</a> ' +
       'adresinden ücretsiz açabilirsiniz.<br><br>' +
@@ -507,6 +523,9 @@ const I18N = {
     lblPass: "EPİAŞ password",
     btnLogin: "Sign in",
     btnLoggingIn: "Signing in…",
+    ttlShowPass: "Show password",
+    ttlHidePass: "Hide password",
+    hintSpace: "(Tip: there is a space at the start or end of one of the fields — it may have come in when pasting.)",
     loginNote: 'This site fetches data using <b>your own EPİAŞ Transparency account</b>. If you do not have one, ' +
       'you can register free of charge at <a href="https://kayit.epias.com.tr" target="_blank" rel="noopener">kayit.epias.com.tr</a>.<br><br>' +
       "Privacy: your details are passed to EPİAŞ at the moment you sign in and nowhere else; they are " +
@@ -666,10 +685,13 @@ function applyLang(lang) {
   document.title = t("title");
   const meta = document.querySelector('meta[name="description"]');
   if (meta) meta.content = t("metaDesc");
-  document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = t(el.dataset.i18n); });
-  document.querySelectorAll("[data-i18n-html]").forEach(el => { el.innerHTML = t(el.dataset.i18nHtml); });
-  document.querySelectorAll("[data-i18n-ph]").forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
-  document.querySelectorAll("[data-i18n-title]").forEach(el => { el.title = t(el.dataset.i18nTitle); });
+  // Değer gerçekten değiştiyse yaz: gereksiz DOM mutasyonu tarayıcının otomatik
+  // doldurmasını (autofill) tetikleyip alanların içeriğini bozabiliyor
+  const set = (el, prop, val) => { if (el[prop] !== val) el[prop] = val; };
+  document.querySelectorAll("[data-i18n]").forEach(el => set(el, "textContent", t(el.dataset.i18n)));
+  document.querySelectorAll("[data-i18n-html]").forEach(el => set(el, "innerHTML", t(el.dataset.i18nHtml)));
+  document.querySelectorAll("[data-i18n-ph]").forEach(el => set(el, "placeholder", t(el.dataset.i18nPh)));
+  document.querySelectorAll("[data-i18n-title]").forEach(el => set(el, "title", t(el.dataset.i18nTitle)));
   const other = LANG === "tr" ? "EN" : "TR";
   $("langBtn").textContent = "🌐 " + other;
   $("langBtnLogin").textContent = "🌐 " + other;
@@ -761,8 +783,15 @@ async function epias(path, payload, retry = true) {
 function showLogin() { $("loginOverlay").style.display = "flex"; }
 function hideLogin() { $("loginOverlay").style.display = "none"; }
 
-$("loginBtn").onclick = doLogin;
-$("lPass").addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
+// Gerçek form submit'i: Enter de, düğme de aynı yoldan geçer (çift tetikleme olmaz)
+$("loginForm").addEventListener("submit", e => { e.preventDefault(); doLogin(); });
+// Şifreyi göster/gizle — otomatik doldurulan eski bir şifreyi görebilmek için
+$("pwEye").onclick = () => {
+  const p = $("lPass");
+  p.type = p.type === "password" ? "text" : "password";
+  $("pwEye").textContent = p.type === "password" ? "👁" : "🙈";
+  $("pwEye").title = t(p.type === "password" ? "ttlShowPass" : "ttlHidePass");
+};
 async function doLogin() {
   const email = $("lEmail").value.trim(), pass = $("lPass").value;
   setLoginError(null, null);
@@ -777,6 +806,11 @@ async function doLogin() {
     init();
   } catch (e) {
     setLoginError(null, e.message);
+    // Kopyala-yapıştırdan gelen baştaki/sondaki boşluk klasik bir sessiz hatadır — uyar
+    if (pass !== pass.trim() || email !== $("lEmail").value) {
+      const b = $("loginErr");
+      b.textContent += " " + t("hintSpace");
+    }
   } finally {
     btn.disabled = false; btn.textContent = t("btnLogin");
   }

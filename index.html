@@ -84,12 +84,6 @@
     border-radius: 8px; padding: 11px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 4px;
   }
   .login-card button:disabled { opacity: .5; }
-  .login-lang { text-align: right; margin: -8px 0 2px; }
-  .login-card .login-lang button {
-    width: auto; margin: 0; padding: 3px 9px; font-size: 12px; font-weight: 500;
-    background: var(--surface-1); color: var(--text-secondary);
-    border: 1px solid var(--border); border-radius: 8px;
-  }
   .login-note { font-size: 12px; color: var(--text-muted); margin-top: 14px; line-height: 1.55; }
   .login-note a { color: var(--series-1); }
   #loginErr { color: var(--danger); font-size: 13.5px; margin-top: 10px; display: none; }
@@ -215,23 +209,22 @@
 
 <div id="loginOverlay">
   <div class="login-card">
-    <div class="login-lang"><button id="langBtnLogin">🌐 EN</button></div>
-    <h1 data-i18n="loginH1">⚡ Elektrik Verileri</h1>
-    <div class="tag" data-i18n="loginTag">Santral bazlı üretim paneli — EPİAŞ Şeffaflık verisiyle</div>
-    <label class="small" for="lEmail" data-i18n="emailLabel">EPİAŞ Şeffaflık e-posta adresi</label>
-    <input id="lEmail" type="email" autocomplete="username" data-i18n-ph="emailPh" placeholder="ornek@kurum.com">
-    <label class="small" for="lPass" data-i18n="passLabel">EPİAŞ şifresi</label>
+    <h1>⚡ Elektrik Verileri</h1>
+    <div class="tag">Santral bazlı üretim paneli — EPİAŞ Şeffaflık verisiyle</div>
+    <label class="small" for="lEmail">EPİAŞ Şeffaflık e-posta adresi</label>
+    <input id="lEmail" type="email" autocomplete="username" placeholder="ornek@kurum.com">
+    <label class="small" for="lPass">EPİAŞ şifresi</label>
     <input id="lPass" type="password" autocomplete="current-password" placeholder="••••••••">
-    <button id="loginBtn" data-i18n="signIn">Giriş yap</button>
+    <button id="loginBtn">Giriş yap</button>
     <div id="loginErr"></div>
-    <div class="login-note" data-i18n-html="loginNote">
+    <div class="login-note">
       Bu site verileri <b>sizin EPİAŞ Şeffaflık hesabınızla</b> çeker. Hesabınız yoksa
       <a href="https://kayit.epias.com.tr" target="_blank" rel="noopener">kayit.epias.com.tr</a>
       adresinden ücretsiz açabilirsiniz.<br><br>
       Gizlilik: bilgileriniz yalnızca giriş anında EPİAŞ'a iletilir; bu sitede ve aracı
       sunucuda <b>saklanmaz, loglanmaz</b>. Oturum anahtarı yalnızca bu sekmede tutulur.
     </div>
-    <div class="login-note disclaimer" data-i18n="disclaimer">
+    <div class="login-note disclaimer">
       VERİ: EPİAŞ ŞEFFAFLIK PLATFORMU | Burada sunulan tüm görsel, grafik ve veriler
       bilgilendirme amaçlı olup söz konusu verilerden kaynaklanabilecek kayıp ve zararlardan
       dolayı Enerji Piyasaları İşletme A.Ş. veya https://elektrikverileri.com hukuken
@@ -243,42 +236,41 @@
 
 <div class="wrap">
   <header>
-    <h1 data-i18n="headerH1">Santral Üretim Paneli</h1>
-    <span class="sub" data-i18n="headerSub">EPİAŞ Şeffaflık · saatlik gerçek zamanlı üretim</span>
+    <h1>Santral Üretim Paneli</h1>
+    <span class="sub">EPİAŞ Şeffaflık · saatlik gerçek zamanlı üretim</span>
     <div class="hbtns">
       <span class="sub" id="whoami"></span>
-      <button id="themeBtn" data-i18n="themeBtn" data-i18n-title="themeTitle" title="Tema değiştir">◐ Tema</button>
-      <button id="langBtn">🌐 EN</button>
-      <button id="logoutBtn" data-i18n="logout">Çıkış</button>
+      <button id="themeBtn" title="Tema değiştir">◐ Tema</button>
+      <button id="logoutBtn">Çıkış</button>
     </div>
   </header>
 
   <div class="card">
-    <label class="small" for="q" data-i18n="searchLabel">Santral ara (ad, kısa ad veya EIC)</label>
+    <label class="small" for="q">Santral ara (ad, kısa ad veya EIC)</label>
     <div class="searchbox">
-      <input id="q" type="text" data-i18n-ph="searchPh" placeholder="Örn. CENAL, ATATÜRK HES… (seçtikten sonra ikinci santrali de ekleyebilirsiniz)" autocomplete="off">
+      <input id="q" type="text" placeholder="Örn. CENAL, ATATÜRK HES… (seçtikten sonra ikinci santrali de ekleyebilirsiniz)" autocomplete="off">
       <div id="results"></div>
     </div>
     <div class="chip" id="chip"></div>
 
     <div class="controls">
       <div>
-        <label class="small" for="d1" data-i18n="startDate">Başlangıç</label>
+        <label class="small" for="d1">Başlangıç</label>
         <input type="date" id="d1">
       </div>
       <div>
-        <label class="small" for="d2" data-i18n="endDate">Bitiş</label>
+        <label class="small" for="d2">Bitiş</label>
         <input type="date" id="d2">
       </div>
       <div>
-        <label class="small" data-i18n="quickRange">Hızlı aralık</label>
+        <label class="small">Hızlı aralık</label>
         <div class="quick">
-          <button data-r="year" data-i18n="thisYear">Bu yıl</button>
-          <button data-r="month" data-i18n="thisMonth">Bu ay</button>
-          <button data-r="week" data-i18n="thisWeek">Bu hafta</button>
+          <button data-r="year">Bu yıl</button>
+          <button data-r="month">Bu ay</button>
+          <button data-r="week">Bu hafta</button>
         </div>
       </div>
-      <button id="fetchBtn" data-i18n="fetch" disabled>Veriyi getir</button>
+      <button id="fetchBtn" disabled>Veriyi getir</button>
       <div class="dl">
         <button id="dlx" disabled>⬇ Excel</button>
         <button id="dlc" disabled>⬇ CSV</button>
@@ -290,14 +282,14 @@
 
   <div class="card" id="statsCard" style="display:none">
     <div class="stats">
-      <div class="stat"><div class="k" data-i18n="stTotal">Toplam üretim</div><div class="v" id="stTotal">–</div><div class="s" id="stTotalSub"></div></div>
-      <div class="stat"><div class="k" data-i18n="stAvg">Ortalama saatlik</div><div class="v" id="stAvg">–</div><div class="s">MWh</div></div>
-      <div class="stat"><div class="k" data-i18n="stMax">En yüksek saat</div><div class="v" id="stMax">–</div><div class="s" id="stMaxSub"></div></div>
-      <div class="stat"><div class="k" data-i18n="stMin">En düşük saat</div><div class="v" id="stMin">–</div><div class="s" id="stMinSub"></div></div>
-      <div class="stat"><div class="k" data-i18n="stCount">Kayıt</div><div class="v" id="stCount">–</div><div class="s" id="stCountSub"></div></div>
-      <div class="stat"><div class="k" data-i18n="stCf">Kapasite faktörü</div><div class="v" id="stCf">–</div><div class="s" id="stCfSub"></div></div>
-      <div class="stat"><div class="k" data-i18n="stZero">Sıfır üretim saatleri</div><div class="v" id="stZero">–</div><div class="s" id="stZeroSub"></div></div>
-      <div class="stat"><div class="k" data-i18n="stShare">Türkiye üretimindeki payı</div><div class="v" id="stShare">–</div><div class="s" id="stShareSub"></div></div>
+      <div class="stat"><div class="k">Toplam üretim</div><div class="v" id="stTotal">–</div><div class="s" id="stTotalSub"></div></div>
+      <div class="stat"><div class="k">Ortalama saatlik</div><div class="v" id="stAvg">–</div><div class="s">MWh</div></div>
+      <div class="stat"><div class="k">En yüksek saat</div><div class="v" id="stMax">–</div><div class="s" id="stMaxSub"></div></div>
+      <div class="stat"><div class="k">En düşük saat</div><div class="v" id="stMin">–</div><div class="s" id="stMinSub"></div></div>
+      <div class="stat"><div class="k">Kayıt</div><div class="v" id="stCount">–</div><div class="s" id="stCountSub"></div></div>
+      <div class="stat"><div class="k">Kapasite faktörü</div><div class="v" id="stCf">–</div><div class="s" id="stCfSub"></div></div>
+      <div class="stat"><div class="k">Sıfır üretim saatleri</div><div class="v" id="stZero">–</div><div class="s" id="stZeroSub"></div></div>
+      <div class="stat"><div class="k">Türkiye üretimindeki payı</div><div class="v" id="stShare">–</div><div class="s" id="stShareSub"></div></div>
     </div>
   </div>
 
@@ -306,10 +298,10 @@
       <h2 id="chartTitle">Üretim</h2>
       <span class="range" id="chartRange"></span>
       <div class="seg" id="viewSeg">
-        <button data-v="hour" data-i18n="vHour">Saatlik</button>
-        <button data-v="day" data-i18n="vDay">Günlük</button>
-        <button data-v="month" data-i18n="vMonth">Aylık</button>
-        <button data-v="table" data-i18n="vTable">Tablo</button>
+        <button data-v="hour">Saatlik</button>
+        <button data-v="day">Günlük</button>
+        <button data-v="month">Aylık</button>
+        <button data-v="table">Tablo</button>
       </div>
     </div>
     <div id="chartBox">
@@ -318,7 +310,7 @@
       <div class="placeholder" id="placeholder">Bir santral seçip “Veriyi getir”e basın.</div>
     </div>
     <div id="tableBox"></div>
-    <div class="note" data-i18n-html="chartNote">Kaynak: EPİAŞ Şeffaflık Platformu, gerçek zamanlı üretim (uzlaştırmaya esas değildir).
+    <div class="note">Kaynak: EPİAŞ Şeffaflık Platformu, gerçek zamanlı üretim (uzlaştırmaya esas değildir).
       Santral bazlı veri en geç <b>düne kadar</b> yayımlanır. Uzun aralıklar 90 günlük parçalar hâlinde
       çekilir; birkaç yıllık sorgular biraz sürebilir. İndirme dosyaları her zaman saatlik ham veridir.</div>
   </div>
@@ -329,16 +321,15 @@
       <span class="range" id="cfInfo"></span>
     </div>
     <div id="cfBox"></div>
-    <div class="note" data-i18n="cfNote">KF = yıllık üretim ÷ (işletmedeki kapasite × yılın saat sayısı). Kapasite,
+    <div class="note">KF = yıllık üretim ÷ (işletmedeki kapasite × yılın saat sayısı). Kapasite,
       EPDK lisans listesindeki güncel “işletmedeki kapasite (MWe)” değeridir ve tüm yıllar için sabit
       varsayılır; santral aşamalı devreye girdiyse ilk yılların KF'si düşük görünür.
       * işaretli yıl devam ediyor (düne kadar). Sonuçlar tarayıcınızda önbelleğe alınır.</div>
   </div>
 
-  <footer>
-    <span data-i18n="footer">elektrikverileri.com · Veri: EPİAŞ Şeffaflık Platformu · Kapasite: EPDK lisans listesi ·
-    Bu site resmî bir EPİAŞ/EPDK sitesi değildir.</span>
-    <div class="disclaimer" data-i18n="disclaimer" style="margin-top:10px; max-width:860px; margin-left:auto; margin-right:auto;">
+  <footer>elektrikverileri.com · Veri: EPİAŞ Şeffaflık Platformu · Kapasite: EPDK lisans listesi ·
+    Bu site resmî bir EPİAŞ/EPDK sitesi değildir.
+    <div class="disclaimer" style="margin-top:10px; max-width:860px; margin-left:auto; margin-right:auto;">
       VERİ: EPİAŞ ŞEFFAFLIK PLATFORMU | Burada sunulan tüm görsel, grafik ve veriler
       bilgilendirme amaçlı olup söz konusu verilerden kaynaklanabilecek kayıp ve zararlardan
       dolayı Enerji Piyasaları İşletme A.Ş. veya https://elektrikverileri.com hukuken
@@ -359,266 +350,9 @@ const TR_ANNUAL_TWH = 354; // Türkiye yıllık üretim varsayımı (pay kartı)
 const CHUNK_DAYS = 89;     // EPİAŞ üretim uçları en fazla 90 günlük aralık kabul ediyor
 
 const $ = id => document.getElementById(id);
+const fmt = (v, d=0) => v == null ? "–" : v.toLocaleString("tr-TR", {maximumFractionDigits: d, minimumFractionDigits: d});
+const AYLAR = ["Oca","Şub","Mar","Nis","May","Haz","Tem","Ağu","Eyl","Eki","Kas","Ara"];
 const esc = s => (s || "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-
-/* ═══════════ DİL / LANGUAGE ═══════════ */
-const I18N = {
-  tr: {
-    docTitle: "Elektrik Verileri — Santral Üretim Paneli",
-    docDesc: "EPİAŞ Şeffaflık verisiyle santral bazlı saatlik üretim: grafik, kapasite faktörü, Excel/CSV indirme.",
-    loginH1: "⚡ Elektrik Verileri",
-    loginTag: "Santral bazlı üretim paneli — EPİAŞ Şeffaflık verisiyle",
-    emailLabel: "EPİAŞ Şeffaflık e-posta adresi",
-    emailPh: "ornek@kurum.com",
-    passLabel: "EPİAŞ şifresi",
-    signIn: "Giriş yap",
-    signingIn: "Giriş yapılıyor…",
-    loginNote: 'Bu site verileri <b>sizin EPİAŞ Şeffaflık hesabınızla</b> çeker. Hesabınız yoksa ' +
-      '<a href="https://kayit.epias.com.tr" target="_blank" rel="noopener">kayit.epias.com.tr</a> ' +
-      'adresinden ücretsiz açabilirsiniz.<br><br>' +
-      "Gizlilik: bilgileriniz yalnızca giriş anında EPİAŞ'a iletilir; bu sitede ve aracı " +
-      "sunucuda <b>saklanmaz, loglanmaz</b>. Oturum anahtarı yalnızca bu sekmede tutulur.",
-    disclaimer: "VERİ: EPİAŞ ŞEFFAFLIK PLATFORMU | Burada sunulan tüm görsel, grafik ve veriler " +
-      "bilgilendirme amaçlı olup söz konusu verilerden kaynaklanabilecek kayıp ve zararlardan " +
-      "dolayı Enerji Piyasaları İşletme A.Ş. veya https://elektrikverileri.com hukuken " +
-      "sorumluluk kabul etmez. Sunulan tüm içerik ve veriler kaynak gösterilmek suretiyle " +
-      "çoğaltılabilir ve kullanılabilir.",
-    headerH1: "Santral Üretim Paneli",
-    headerSub: "EPİAŞ Şeffaflık · saatlik gerçek zamanlı üretim",
-    themeBtn: "◐ Tema",
-    themeTitle: "Tema değiştir",
-    langBtn: "🌐 EN",
-    langTitle: "Switch to English",
-    logout: "Çıkış",
-    searchLabel: "Santral ara (ad, kısa ad veya EIC)",
-    searchPh: "Örn. CENAL, ATATÜRK HES… (seçtikten sonra ikinci santrali de ekleyebilirsiniz)",
-    startDate: "Başlangıç",
-    endDate: "Bitiş",
-    quickRange: "Hızlı aralık",
-    thisYear: "Bu yıl",
-    thisMonth: "Bu ay",
-    thisWeek: "Bu hafta",
-    fetch: "Veriyi getir",
-    waitingLogin: "Giriş bekleniyor…",
-    statusLoadingLicences: "Lisans listesi yükleniyor…",
-    statusFetchingPlants: "Santral listesi çekiliyor… ({i}/{n})",
-    statusPlantsLoaded: "{n} santral yüklendi. Aramaya başlayın.",
-    fetchingPlant: "{name} çekiliyor… ({i}/{n})",
-    noResults: "Sonuç yok.",
-    selectedOne: "Seçili santral:",
-    selectedMany: "Seçili santraller (üretim toplanır):",
-    remove: "Kaldır",
-    errCreds: "E-posta ve şifre girin.",
-    errLogin401: "Giriş başarısız — EPİAŞ e-posta/şifrenizi kontrol edin",
-    errLogin429: "Çok fazla giriş denemesi — lütfen 1 dakika sonra tekrar deneyin",
-    errLoginGeneric: "Giriş başarısız",
-    errSession: "Oturum gerekli",
-    errDates: "Başlangıç ve bitiş tarihlerini seçin.",
-    errFetch: "Veri alınamadı: {msg}",
-    errInitial: "Başlangıç verileri alınamadı: {msg} — sayfayı yenileyin.",
-    stTotal: "Toplam üretim",
-    stAvg: "Ortalama saatlik",
-    stMax: "En yüksek saat",
-    stMin: "En düşük saat",
-    stCount: "Kayıt",
-    stCf: "Kapasite faktörü",
-    stZero: "Sıfır üretim saatleri",
-    stShare: "Türkiye üretimindeki payı",
-    hoursCoverage: "saat · kapsam {p}",
-    cfSharedLicence: " · ortak lisans tek sayıldı",
-    cfUnmatched: " · {n} santral eşleşmedi",
-    cfPending: "kapasite aranıyor…",
-    cfNoMatch: "Lisans listesinde eşleşme yok",
-    zeroSub: "{z} / {n} saat",
-    shareSub: "TR üretimi {twh} TWh/yıl varsayımı, döneme oranlı",
-    chartDefault: "Üretim",
-    phSelect: "Bir santral seçip “Veriyi getir”e basın.",
-    phNoData: "Bu aralıkta veri bulunamadı.",
-    vHour: "Saatlik",
-    vDay: "Günlük",
-    vMonth: "Aylık",
-    vTable: "Tablo",
-    titleHour: "Saatlik üretim",
-    titleDay: "Günlük üretim",
-    titleMonth: "Aylık üretim",
-    titleDailyTable: "Günlük toplam tablosu",
-    unitMwh: "MWh",
-    unitMwhDay: "MWh/gün",
-    unitGwhMonth: "GWh/ay",
-    thDay: "Gün",
-    thGenMwh: "Üretim (MWh)",
-    chartNote: "Kaynak: EPİAŞ Şeffaflık Platformu, gerçek zamanlı üretim (uzlaştırmaya esas değildir). " +
-      "Santral bazlı veri en geç <b>düne kadar</b> yayımlanır. Uzun aralıklar 90 günlük parçalar hâlinde " +
-      "çekilir; birkaç yıllık sorgular biraz sürebilir. İndirme dosyaları her zaman saatlik ham veridir.",
-    cfTitleRange: "Yıllık kapasite faktörü ({a}–{b})",
-    cfTitleFull: "{name} — Yıllık kapasite faktörü ({a}–{b})",
-    cfLicence: "Lisans: {names} · işletmedeki kapasite {cap} MWe",
-    cfNoMatchLong: "Lisans listesinde eşleşme bulunamadı — üretim gösteriliyor, KF hesaplanamıyor",
-    cfCalculating: "Hesaplanıyor…",
-    cfProgress: "{name} · {y} verisi çekiliyor… (ilk seferde uzun sürebilir)",
-    cfFailed: "Hesaplanamadı: {msg}",
-    cfThYear: "Yıl",
-    cfThGen: "Üretim (GWh)",
-    cfThData: "Veri (saat)",
-    cfThCf: "Kapasite faktörü",
-    cfNote: "KF = yıllık üretim ÷ (işletmedeki kapasite × yılın saat sayısı). Kapasite, " +
-      "EPDK lisans listesindeki güncel “işletmedeki kapasite (MWe)” değeridir ve tüm yıllar için sabit " +
-      "varsayılır; santral aşamalı devreye girdiyse ilk yılların KF'si düşük görünür. " +
-      "* işaretli yıl devam ediyor (düne kadar). Sonuçlar tarayıcınızda önbelleğe alınır.",
-    footer: "elektrikverileri.com · Veri: EPİAŞ Şeffaflık Platformu · Kapasite: EPDK lisans listesi · " +
-      "Bu site resmî bir EPİAŞ/EPDK sitesi değildir.",
-    exDate: "Tarih",
-    exHour: "Saat",
-    exGen: "Üretim (MWh)",
-    exPlant: "Santral",
-    exTotal: "Toplam (MWh)",
-    sheetName: "Üretim",
-    slugFallback: "santral",
-    months: ["Oca","Şub","Mar","Nis","May","Haz","Tem","Ağu","Eyl","Eki","Kas","Ara"],
-  },
-  en: {
-    docTitle: "Electricity Data — Power Plant Generation Dashboard",
-    docDesc: "Plant-level hourly generation from EPİAŞ Transparency data: charts, capacity factors and Excel/CSV downloads.",
-    loginH1: "⚡ Electricity Data",
-    loginTag: "Plant-level generation dashboard — built on EPİAŞ Transparency data",
-    emailLabel: "EPİAŞ Transparency email address",
-    emailPh: "name@organisation.com",
-    passLabel: "EPİAŞ password",
-    signIn: "Sign in",
-    signingIn: "Signing in…",
-    loginNote: 'This site fetches data with <b>your own EPİAŞ Transparency account</b>. If you do not have ' +
-      'one, you can register free of charge at ' +
-      '<a href="https://kayit.epias.com.tr" target="_blank" rel="noopener">kayit.epias.com.tr</a>.<br><br>' +
-      "Privacy: your details are passed to EPİAŞ only at the moment you sign in; they are " +
-      "<b>never stored or logged</b> on this site or on the relay. The session key is held in this browser tab alone.",
-    disclaimer: "DATA: EPİAŞ TRANSPARENCY PLATFORM | All visuals, charts and data presented here are for " +
-      "information purposes only; neither Enerji Piyasaları İşletme A.Ş. nor https://elektrikverileri.com " +
-      "accepts any legal liability for loss or damage that may arise from the said data. All content and " +
-      "data presented may be reproduced and used provided that the source is cited.",
-    headerH1: "Power Plant Generation Dashboard",
-    headerSub: "EPİAŞ Transparency · hourly real-time generation",
-    themeBtn: "◐ Theme",
-    themeTitle: "Switch theme",
-    langBtn: "🌐 TR",
-    langTitle: "Türkçeye geç",
-    logout: "Sign out",
-    searchLabel: "Search for a power plant (name, short name or EIC)",
-    searchPh: "e.g. CENAL, ATATÜRK HES… (you can add a second plant once you have chosen one)",
-    startDate: "Start date",
-    endDate: "End date",
-    quickRange: "Quick range",
-    thisYear: "This year",
-    thisMonth: "This month",
-    thisWeek: "This week",
-    fetch: "Fetch data",
-    waitingLogin: "Waiting for sign-in…",
-    statusLoadingLicences: "Loading licence list…",
-    statusFetchingPlants: "Fetching plant list… ({i}/{n})",
-    statusPlantsLoaded: "{n} power plants loaded. Start searching.",
-    fetchingPlant: "Fetching {name}… ({i}/{n})",
-    noResults: "No results.",
-    selectedOne: "Selected plant:",
-    selectedMany: "Selected plants (generation is summed):",
-    remove: "Remove",
-    errCreds: "Please enter your email address and password.",
-    errLogin401: "Sign-in failed — please check your EPİAŞ email address and password",
-    errLogin429: "Too many sign-in attempts — please try again in a minute",
-    errLoginGeneric: "Sign-in failed",
-    errSession: "Session required",
-    errDates: "Please choose a start and end date.",
-    errFetch: "Could not fetch the data: {msg}",
-    errInitial: "Could not load the initial data: {msg} — please refresh the page.",
-    stTotal: "Total generation",
-    stAvg: "Hourly average",
-    stMax: "Peak hour",
-    stMin: "Lowest hour",
-    stCount: "Records",
-    stCf: "Capacity factor",
-    stZero: "Zero-output hours",
-    stShare: "Share of Türkiye's generation",
-    hoursCoverage: "hours · {p} coverage",
-    cfSharedLicence: " · shared licence counted once",
-    cfUnmatched: " · {n} plant(s) unmatched",
-    cfPending: "looking up capacity…",
-    cfNoMatch: "No match in the licence list",
-    zeroSub: "{z} of {n} hours",
-    shareSub: "Assumes {twh} TWh/year for Türkiye, pro-rated to the period",
-    chartDefault: "Generation",
-    phSelect: "Choose a power plant and press “Fetch data”.",
-    phNoData: "No data found for this range.",
-    vHour: "Hourly",
-    vDay: "Daily",
-    vMonth: "Monthly",
-    vTable: "Table",
-    titleHour: "Hourly generation",
-    titleDay: "Daily generation",
-    titleMonth: "Monthly generation",
-    titleDailyTable: "Daily totals",
-    unitMwh: "MWh",
-    unitMwhDay: "MWh/day",
-    unitGwhMonth: "GWh/month",
-    thDay: "Day",
-    thGenMwh: "Generation (MWh)",
-    chartNote: "Source: EPİAŞ Transparency Platform, real-time generation (not settlement data). " +
-      "Plant-level data is published <b>up to yesterday</b> at the latest. Long ranges are fetched in " +
-      "90-day chunks, so queries spanning several years may take a moment. Downloaded files always " +
-      "contain the raw hourly data.",
-    cfTitleRange: "Annual capacity factor ({a}–{b})",
-    cfTitleFull: "{name} — Annual capacity factor ({a}–{b})",
-    cfLicence: "Licence: {names} · capacity in operation {cap} MWe",
-    cfNoMatchLong: "No match found in the licence list — generation is shown, but the capacity factor cannot be calculated",
-    cfCalculating: "Calculating…",
-    cfProgress: "Fetching {name} · {y} data… (the first run can take a while)",
-    cfFailed: "Could not calculate: {msg}",
-    cfThYear: "Year",
-    cfThGen: "Generation (GWh)",
-    cfThData: "Data (hours)",
-    cfThCf: "Capacity factor",
-    cfNote: "CF = annual generation ÷ (capacity in operation × hours in the year). Capacity is the current " +
-      "“capacity in operation (MWe)” figure from the EPDK licence list and is assumed to be constant across " +
-      "all years; if a plant was commissioned in stages, the capacity factor for its early years will look low. " +
-      "A year marked * is still under way (up to yesterday). Results are cached in your browser.",
-    footer: "elektrikverileri.com · Data: EPİAŞ Transparency Platform · Capacity: EPDK licence list · " +
-      "This is not an official EPİAŞ or EPDK website.",
-    exDate: "Date",
-    exHour: "Hour",
-    exGen: "Generation (MWh)",
-    exPlant: "Plant",
-    exTotal: "Total (MWh)",
-    sheetName: "Generation",
-    slugFallback: "plant",
-    months: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
-  },
-};
-const LOCALE = { tr: "tr-TR", en: "en-GB" };
-const HTML_LANG = { tr: "tr", en: "en-GB" };
-
-function pickLang() {
-  try {
-    const saved = localStorage.getItem("evLang");
-    if (saved === "tr" || saved === "en") return saved;
-  } catch {}
-  const langs = navigator.languages && navigator.languages.length
-    ? navigator.languages : [navigator.language || ""];
-  return langs.some(l => (l || "").toLowerCase().startsWith("tr")) ? "tr" : "en";
-}
-let LANG = pickLang();
-
-function t(key, args) {
-  let s = I18N[LANG][key];
-  if (s == null) s = I18N.tr[key] ?? key;
-  // Sayı olarak verilen argümanlar aktif dilin biçimiyle yazılır (yıllar String olarak geçilir)
-  if (args) for (const k in args) {
-    const v = typeof args[k] === "number" ? fmt(args[k]) : args[k];
-    s = s.split("{" + k + "}").join(v);
-  }
-  return s;
-}
-const fmt = (v, d=0) => v == null ? "–"
-  : v.toLocaleString(LOCALE[LANG], {maximumFractionDigits: d, minimumFractionDigits: d});
-// Yüzde yazımı: TR "%86,0" · EN "86.0%"
-const pct = (v, d=1) => LANG === "tr" ? "%" + fmt(v, d) : fmt(v, d) + "%";
-const mon = i => I18N[LANG].months[i];
 
 /* ── durum ── */
 const state = {
@@ -632,54 +366,14 @@ const state = {
   activeIdx: -1,
   capMap: {},
   cfFor: null,
-  cfData: null,          // son çizilen KF tablosu (dil değişince yeniden çizilir)
-  status: null,          // {key, args} — durum notu
-  err: null,             // {key, args} — hata kutusu
-  loginErr: null,        // {key} | {raw}
 };
 
 /* ── tema ── */
 const root = document.documentElement;
-function applyTheme(th) { root.setAttribute("data-theme", th); localStorage.setItem("evTheme", th); if (state.items.length) render(); }
+function applyTheme(t) { root.setAttribute("data-theme", t); localStorage.setItem("evTheme", t); if (state.items.length) render(); }
 applyTheme(localStorage.getItem("evTheme") ||
   (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
 $("themeBtn").onclick = () => applyTheme(root.getAttribute("data-theme") === "dark" ? "light" : "dark");
-
-/* ── dil uygulama ── */
-function applyLang() {
-  root.lang = HTML_LANG[LANG];
-  document.title = t("docTitle");
-  const md = document.querySelector('meta[name="description"]');
-  if (md) md.content = t("docDesc");
-  document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = t(el.dataset.i18n); });
-  document.querySelectorAll("[data-i18n-html]").forEach(el => { el.innerHTML = t(el.dataset.i18nHtml); });
-  document.querySelectorAll("[data-i18n-ph]").forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
-  document.querySelectorAll("[data-i18n-title]").forEach(el => { el.title = t(el.dataset.i18nTitle); });
-  for (const id of ["langBtn", "langBtnLogin"]) {
-    $(id).textContent = t("langBtn");
-    $(id).title = t("langTitle");
-  }
-  // durum / hata metinleri
-  $("statusNote").textContent = state.status ? t(state.status.key, state.status.args) : t("waitingLogin");
-  if (state.err) $("errBox").textContent = t(state.err.key, state.err.args);
-  if (state.loginErr) {
-    $("loginErr").textContent = state.loginErr.key ? t(state.loginErr.key) : state.loginErr.raw;
-  }
-  // dinamik bölümler
-  if (state.sel.length) renderSelection();
-  if (!state.fetchedFor) $("chartTitle").textContent = t("chartDefault");
-  if (state.items.length) { render(); updateStats(); } else { render(); }
-  if (state.cfData) renderCfTable(state.cfData.j, state.cfData.f);
-  else $("cfTitle").textContent = t("cfTitleRange", { a: String(CF_START_YEAR), b: trtToday().slice(0, 4) });
-}
-function setLang(l) {
-  LANG = l;
-  try { localStorage.setItem("evLang", l); } catch {}
-  applyLang();
-}
-const toggleLang = () => setLang(LANG === "tr" ? "en" : "tr");
-$("langBtn").onclick = toggleLang;
-$("langBtnLogin").onclick = toggleLang;
 
 /* ═══════════ OTURUM / EPİAŞ API ═══════════
    Şifre yalnızca bu sekmenin belleğinde tutulur (yenileme için); hiçbir yere yazılmaz. */
@@ -694,29 +388,23 @@ async function apiLogin(email, pass) {
     body: JSON.stringify({ username: email, password: pass }),
   });
   const j = await r.json().catch(() => ({}));
-  if (!r.ok || !j.tgt) {
-    // Bilinen durumlar arayüz dilinde; beklenmeyen durumlarda sunucu mesajı (teşhis için)
-    const key = r.status === 429 ? "errLogin429" : (r.status === 401 ? "errLogin401" : null);
-    const e = new Error(key ? t(key) : (j.error || t("errLoginGeneric")));
-    e.i18nKey = key;
-    throw e;
-  }
+  if (!r.ok || !j.tgt) throw new Error(j.error || "Giriş başarısız");
   TGT = { v: j.tgt, ts: Date.now() };
   CREDS = { email, pass };
 }
 
 async function ensureTgt() {
   if (TGT.v && Date.now() - TGT.ts < TGT_MAX_AGE) return TGT.v;
-  if (!CREDS) { showLogin(); throw new Error(t("errSession")); }
+  if (!CREDS) { showLogin(); throw new Error("Oturum gerekli"); }
   await apiLogin(CREDS.email, CREDS.pass);
   return TGT.v;
 }
 
 async function epias(path, payload, retry = true) {
-  const tgt = await ensureTgt();
+  const t = await ensureTgt();
   const r = await fetch(API + "/epias", {
     method: "POST",
-    headers: { "Content-Type": "application/json", "X-TGT": tgt },
+    headers: { "Content-Type": "application/json", "X-TGT": t },
     body: JSON.stringify({ path, payload }),
   });
   if ((r.status === 401 || r.status === 403) && retry && CREDS) {
@@ -734,22 +422,16 @@ async function epias(path, payload, retry = true) {
 /* ── giriş ekranı ── */
 function showLogin() { $("loginOverlay").style.display = "flex"; }
 function hideLogin() { $("loginOverlay").style.display = "none"; }
-function showLoginErr(info) {
-  state.loginErr = info;
-  const err = $("loginErr");
-  if (!info) { err.style.display = "none"; err.textContent = ""; return; }
-  err.textContent = info.key ? t(info.key) : info.raw;
-  err.style.display = "block";
-}
 
 $("loginBtn").onclick = doLogin;
 $("lPass").addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
 async function doLogin() {
   const email = $("lEmail").value.trim(), pass = $("lPass").value;
-  showLoginErr(null);
-  if (!email || !pass) { showLoginErr({ key: "errCreds" }); return; }
+  const err = $("loginErr");
+  err.style.display = "none";
+  if (!email || !pass) { err.textContent = "E-posta ve şifre girin."; err.style.display = "block"; return; }
   const btn = $("loginBtn");
-  btn.disabled = true; btn.textContent = t("signingIn");
+  btn.disabled = true; btn.textContent = "Giriş yapılıyor…";
   try {
     await apiLogin(email, pass);
     $("lPass").value = "";
@@ -757,9 +439,10 @@ async function doLogin() {
     $("whoami").textContent = email;
     init();
   } catch (e) {
-    showLoginErr(e.i18nKey ? { key: e.i18nKey } : { raw: e.message });
+    err.textContent = e.message;
+    err.style.display = "block";
   } finally {
-    btn.disabled = false; btn.textContent = t("signIn");
+    btn.disabled = false; btn.textContent = "Giriş yap";
   }
 }
 $("logoutBtn").onclick = () => { CREDS = null; TGT = { v: null, ts: 0 }; location.reload(); };
@@ -792,11 +475,6 @@ document.querySelectorAll(".quick button").forEach(b => {
 });
 
 /* ═══════════ SANTRAL LİSTESİ ═══════════ */
-function setStatus(key, args) {
-  state.status = key ? { key, args } : null;
-  $("statusNote").textContent = key ? t(key, args) : "";
-}
-
 async function loadPlants() {
   const today = trtToday();
   try {
@@ -808,7 +486,7 @@ async function loadPlants() {
   for (let i = 0; i < 6; i++) days.push(`${year - i}-01-01`); // kapanmış santraller de bulunsun
   const merged = new Map();
   for (let i = 0; i < days.length; i++) {
-    setStatus("statusFetchingPlants", { i: String(i + 1), n: String(days.length) });
+    $("statusNote").textContent = `Santral listesi çekiliyor… (${i + 1}/${days.length})`;
     try {
       const j = await epias("generation/data/powerplant-list-for-date-range", {
         startDate: days[i] + "T00:00:00+03:00",
@@ -844,11 +522,11 @@ const THERMAL = new Set(["termik", "gaz", "komur"]);
 
 function tokens(s) {
   s = (s || "").toLocaleLowerCase("tr-TR").replace(/[çğıöşüâîûi̇]/g, c => TRMAP[c] || c);
-  return (s.match(/[a-z]+|[0-9]+/g) || []).map(x => ROMAN[x] || x);
+  return (s.match(/[a-z]+|[0-9]+/g) || []).map(t => ROMAN[t] || t);
 }
 function typesOf(toks) {
   const out = new Set();
-  for (const x of toks) if (TYPE[x]) out.add(TYPE[x]);
+  for (const t of toks) if (TYPE[t]) out.add(TYPE[t]);
   return out;
 }
 function typeScore(a, b) {
@@ -862,25 +540,25 @@ function typeScore(a, b) {
 function matchLicense(...names) {
   const q = [];
   for (const n of names) {
-    for (const x of tokens(n)) {
-      if ((/^\d+$/.test(x) && x.length > 2) || x.length > 14) continue; // EIC/ID parçaları
-      if (!q.includes(x)) q.push(x);
+    for (const t of tokens(n)) {
+      if ((/^\d+$/.test(t) && t.length > 2) || t.length > 14) continue; // EIC/ID parçaları
+      if (!q.includes(t)) q.push(t);
     }
   }
-  const sig = q.filter(x => !STOP.has(x) && !/^\d+$/.test(x));
+  const sig = q.filter(t => !STOP.has(t) && !/^\d+$/.test(t));
   if (!sig.length) return null;
   const qTypes = typesOf(q);
   let best = null, bestScore = 0;
   for (const lic of state.licenses) {
     let mSig = 0;
-    for (const x of sig) if (lic.t.has(x)) mSig++;
+    for (const t of sig) if (lic.t.has(t)) mSig++;
     if (!mSig) continue;
     const ts = typeScore(qTypes, lic.ty);
     if (ts < 0) continue;
     let mAll = 0;
-    for (const x of q) if (lic.t.has(x)) mAll++;
+    for (const t of q) if (lic.t.has(t)) mAll++;
     let licSigN = 0, licSigHit = 0;
-    for (const x of lic.t) if (!STOP.has(x)) { licSigN++; if (q.includes(x)) licSigHit++; }
+    for (const t of lic.t) if (!STOP.has(t)) { licSigN++; if (q.includes(t)) licSigHit++; }
     const coverage = licSigN ? licSigHit / licSigN : 0;
     let score = mSig * 10 + mAll * 2 + coverage * 2 - lic.t.size * 0.05 + ts;
     if (lic.s) score += 0.5;
@@ -912,8 +590,8 @@ async function loadLicenses() {
   const r = await fetch("licenses.json");
   const raw = await r.json();
   state.licenses = raw.map(l => {
-    const tk = new Set(tokens(l.n));
-    return { n: l.n, c: l.c, s: l.s, t: tk, ty: typesOf(tk) };
+    const t = new Set(tokens(l.n));
+    return { n: l.n, c: l.c, s: l.s, t, ty: typesOf(t) };
   });
 }
 
@@ -945,7 +623,7 @@ async function fetchGenerationMulti(plants, startDay, endDay, onProgress) {
   for (let i = 0; i < plants.length; i++) {
     const p = plants[i];
     per[p.id] = await fetchGenOne(p.id, startDay, endDay, () => {
-      if (onProgress) onProgress(t("fetchingPlant", { name: p.shortName || p.name, i: String(i + 1), n: String(plants.length) }));
+      if (onProgress) onProgress(`${p.shortName || p.name} çekiliyor… (${i + 1}/${plants.length})`);
     });
   }
   if (plants.length === 1) return { items: per[plants[0].id], per };
@@ -971,7 +649,7 @@ function renderResults(list) {
   const box = $("results");
   state.activeIdx = -1;
   if (!list) { box.style.display = "none"; box.innerHTML = ""; return; }
-  if (!list.length) { box.innerHTML = `<div class="none">${esc(t("noResults"))}</div>`; box.style.display = "block"; return; }
+  if (!list.length) { box.innerHTML = '<div class="none">Sonuç yok.</div>'; box.style.display = "block"; return; }
   box.innerHTML = list.map((p, i) =>
     `<div class="item" data-i="${i}"><div class="nm">${esc(p.name)}</div>` +
     `<div class="meta">${esc(p.shortName || "")} · ID ${p.id}${p.eic ? " · " + esc(p.eic) : ""}</div></div>`
@@ -1023,33 +701,28 @@ function renderSelection() {
     return;
   }
   chip.style.display = "block";
-  chip.innerHTML = `<span class="lbl">${esc(t(state.sel.length > 1 ? "selectedMany" : "selectedOne"))}</span>` +
+  chip.innerHTML = `<span class="lbl">Seçili santral${state.sel.length > 1 ? "ler (üretim toplanır)" : ""}:</span>` +
     state.sel.map(p =>
       `<span class="pill"><b>${esc(p.shortName || p.name)}</b>` +
       `<span class="meta">ID ${p.id}</span>` +
-      `<button title="${esc(t("remove"))}" data-id="${p.id}">✕</button></span>`
+      `<button title="Kaldır" data-id="${p.id}">✕</button></span>`
     ).join("");
   chip.querySelectorAll("button").forEach(b => b.onclick = () => removePlant(+b.dataset.id));
   $("fetchBtn").disabled = false;
 }
 
 /* ═══════════ VERİ ÇEKME ═══════════ */
-function showError(key, args) {
-  state.err = key ? { key, args } : null;
-  const b = $("errBox");
-  b.textContent = key ? t(key, args) : "";
-  b.style.display = key ? "block" : "none";
-}
+function showError(msg) { const b = $("errBox"); b.textContent = msg; b.style.display = msg ? "block" : "none"; }
 
 $("fetchBtn").onclick = async () => {
   if (!state.sel.length) return;
   let start = $("d1").value, end = $("d2").value;
-  if (!start || !end) { showError("errDates"); return; }
+  if (!start || !end) { showError("Başlangıç ve bitiş tarihlerini seçin."); return; }
   if (start > end) [start, end] = [end, start];
   const y = yesterday();
   if (end > y) end = y;
   if (start > y) start = y;
-  showError(null);
+  showError("");
   const btn = $("fetchBtn");
   btn.disabled = true;
   const plants = [...state.sel];
@@ -1069,10 +742,10 @@ $("fetchBtn").onclick = async () => {
     updateStats();
     loadYearlyCf();
   } catch (e) {
-    showError("errFetch", { msg: e.message });
+    showError("Veri alınamadı: " + e.message);
   } finally {
     btn.disabled = false;
-    btn.textContent = t("fetch");
+    btn.textContent = "Veriyi getir";
   }
 };
 
@@ -1104,23 +777,23 @@ function updateStats() {
   $("stMin").textContent = fmt(it[minI].total || 0, 1);
   $("stMinSub").textContent = "MWh · " + labelHour(it[minI].date);
   $("stCount").textContent = fmt(it.length);
-  $("stCountSub").textContent = t("hoursCoverage", { p: pct(Math.min(100, it.length / hoursSpan * 100), 0) });
+  $("stCountSub").textContent = "saat · kapsam %" + fmt(Math.min(100, it.length / hoursSpan * 100), 0);
   const cc = combinedCapacity();
   if (cc.capacityMw) {
-    $("stCf").textContent = pct(total / (cc.capacityMw * hoursSpan) * 100, 1);
+    $("stCf").textContent = "%" + fmt(total / (cc.capacityMw * hoursSpan) * 100, 1);
     let sub = fmt(cc.capacityMw, 1) + " MWe · " + cc.licenseNames.join(" + ");
-    if (cc.merged) sub += t("cfSharedLicence");
-    if (cc.unmatched) sub += t("cfUnmatched", { n: cc.unmatched });
+    if (cc.merged) sub += " · ortak lisans tek sayıldı";
+    if (cc.unmatched) sub += ` · ${cc.unmatched} santral eşleşmedi`;
     $("stCfSub").textContent = sub;
   } else {
     $("stCf").textContent = "–";
-    $("stCfSub").textContent = cc.pending ? t("cfPending") : t("cfNoMatch");
+    $("stCfSub").textContent = cc.pending ? "kapasite aranıyor…" : "Lisans listesinde eşleşme yok";
   }
-  $("stZero").textContent = pct(zeros / it.length * 100, 1);
-  $("stZeroSub").textContent = t("zeroSub", { z: zeros, n: it.length });
+  $("stZero").textContent = "%" + fmt(zeros / it.length * 100, 1);
+  $("stZeroSub").textContent = fmt(zeros) + " / " + fmt(it.length) + " saat";
   const trPeriodMwh = TR_ANNUAL_TWH * 1e6 * hoursSpan / 8760;
-  $("stShare").textContent = pct(total / trPeriodMwh * 100, 2);
-  $("stShareSub").textContent = t("shareSub", { twh: TR_ANNUAL_TWH });
+  $("stShare").textContent = "%" + fmt(total / trPeriodMwh * 100, 2);
+  $("stShareSub").textContent = `TR üretimi ${TR_ANNUAL_TWH} TWh/yıl varsayımı, döneme oranlı`;
 }
 
 /* ═══════════ YILLIK KAPASİTE FAKTÖRÜ ═══════════ */
@@ -1128,11 +801,10 @@ async function loadYearlyCf() {
   const f = state.fetchedFor;
   if (!f || state.cfFor === f.plantIds) return;
   state.cfFor = f.plantIds;
-  state.cfData = null;
   $("cfCard").style.display = "block";
   $("cfInfo").textContent = "";
   const box = $("cfBox");
-  box.innerHTML = `<div class="placeholder" id="cfProg">${esc(t("cfCalculating"))}</div>`;
+  box.innerHTML = '<div class="placeholder" id="cfProg">Hesaplanıyor…</div>';
   const prog = msg => { const p = $("cfProg"); if (p) p.textContent = msg; };
   try {
     const curYear = +trtToday().slice(0, 4);
@@ -1148,7 +820,7 @@ async function loadYearlyCf() {
         try { ent = JSON.parse(localStorage.getItem(key)); } catch {}
         const valid = ent && (ent.complete || ent.asof === yest);
         if (!valid) {
-          prog(t("cfProgress", { name: p.shortName || p.name, y: String(y) }));
+          prog(`${p.shortName || p.name} · ${y} verisi çekiliyor… (ilk seferde uzun sürebilir)`);
           const items = await fetchGenOne(p.id, `${y}-01-01`, endDay);
           let mwh = 0;
           for (const it of items) mwh += it.total || 0;
@@ -1171,31 +843,29 @@ async function loadYearlyCf() {
                     merged: cc.merged, unmatched: cc.unmatched, years }, f);
   } catch (e) {
     if (state.cfFor === f.plantIds) state.cfFor = null;
-    $("cfBox").innerHTML = `<div class="placeholder">${esc(t("cfFailed", { msg: e.message }))}</div>`;
+    box.innerHTML = `<div class="placeholder">Hesaplanamadı: ${esc(e.message)}</div>`;
   }
 }
 
 function renderCfTable(j, f) {
-  state.cfData = { j, f };
   const lastYear = +trtToday().slice(0, 4);
-  $("cfTitle").textContent = t("cfTitleFull", { name: f.name, a: String(CF_START_YEAR), b: String(lastYear) });
+  $("cfTitle").textContent = `${f.name} — Yıllık kapasite faktörü (${CF_START_YEAR}–${lastYear})`;
   let info = j.capacityMw
-    ? t("cfLicence", { names: j.licenseNames.join(" + "), cap: fmt(j.capacityMw, 1) })
-    : t("cfNoMatchLong");
-  if (j.merged) info += t("cfSharedLicence");
-  if (j.unmatched && j.capacityMw) info += t("cfUnmatched", { n: j.unmatched });
+    ? `Lisans: ${j.licenseNames.join(" + ")} · işletmedeki kapasite ${fmt(j.capacityMw, 1)} MWe`
+    : "Lisans listesinde eşleşme bulunamadı — üretim gösteriliyor, KF hesaplanamıyor";
+  if (j.merged) info += " · ortak lisans tek sayıldı";
+  if (j.unmatched && j.capacityMw) info += ` · ${j.unmatched} santral eşleşmedi`;
   $("cfInfo").textContent = info;
   const rows = j.years.map(y => {
     const cf = (y.cf != null && y.records)
-      ? `<span class="cfbar"><i style="width:${Math.max(0, Math.min(100, y.cf)).toFixed(1)}%"></i></span>${pct(y.cf, 1)}`
+      ? `<span class="cfbar"><i style="width:${Math.max(0, Math.min(100, y.cf)).toFixed(1)}%"></i></span>%${fmt(y.cf, 1)}`
       : "–";
     return `<tr><td>${y.year}${y.partial ? "*" : ""}</td>` +
            `<td>${y.records ? fmt(y.mwh / 1000, 1) : "–"}</td>` +
            `<td>${y.records ? fmt(y.records) : "–"}</td>` +
            `<td>${cf}</td></tr>`;
   }).join("");
-  $("cfBox").innerHTML = `<table><thead><tr><th>${esc(t("cfThYear"))}</th><th>${esc(t("cfThGen"))}</th>` +
-    `<th>${esc(t("cfThData"))}</th><th>${esc(t("cfThCf"))}</th></tr></thead><tbody>${rows}</tbody></table>`;
+  $("cfBox").innerHTML = `<table><thead><tr><th>Yıl</th><th>Üretim (GWh)</th><th>Veri (saat)</th><th>Kapasite faktörü</th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 
 /* ═══════════ GÖRÜNÜM / GRAFİK ═══════════ */
@@ -1212,13 +882,13 @@ document.querySelectorAll("#viewSeg button").forEach(b => {
 });
 syncSeg();
 
-function labelHour(d) { return d.slice(8,10) + " " + mon(+d.slice(5,7)-1) + " " + d.slice(0,4) + " " + d.slice(11,16); }
-function labelDay(d)  { return d.slice(8,10) + " " + mon(+d.slice(5,7)-1) + " " + d.slice(0,4); }
-function labelMonth(d){ return mon(+d.slice(5,7)-1) + " " + d.slice(0,4); }
+function labelHour(d) { return d.slice(8,10) + " " + AYLAR[+d.slice(5,7)-1] + " " + d.slice(0,4) + " " + d.slice(11,16); }
+function labelDay(d)  { return d.slice(8,10) + " " + AYLAR[+d.slice(5,7)-1] + " " + d.slice(0,4); }
+function labelMonth(d){ return AYLAR[+d.slice(5,7)-1] + " " + d.slice(0,4); }
 
 function seriesFor(view) {
   const it = state.items;
-  if (view === "hour") return {pts: it.map(x => ({k: x.date, v: x.total || 0})), lab: labelHour, unit: t("unitMwh"), title: t("titleHour")};
+  if (view === "hour") return {pts: it.map(x => ({k: x.date, v: x.total || 0})), lab: labelHour, unit: "MWh", title: "Saatlik üretim"};
   const keyLen = view === "day" ? 10 : 7;
   const m = new Map();
   for (const x of it) {
@@ -1227,8 +897,8 @@ function seriesFor(view) {
   }
   const pts = [...m.entries()].map(([k, v]) => ({k, v}));
   return view === "day"
-    ? {pts, lab: labelDay, unit: t("unitMwhDay"), title: t("titleDay")}
-    : {pts, lab: labelMonth, unit: t("unitGwhMonth"), title: t("titleMonth"), scale: 1/1000};
+    ? {pts, lab: labelDay, unit: "MWh/gün", title: "Günlük üretim"}
+    : {pts, lab: labelMonth, unit: "GWh/ay", title: "Aylık üretim", scale: 1/1000};
 }
 
 function render() {
@@ -1237,7 +907,7 @@ function render() {
   if (!state.items.length) {
     svg.innerHTML = ""; tbl.style.display = "none";
     ph.style.display = "block";
-    ph.textContent = state.fetchedFor ? t("phNoData") : t("phSelect");
+    ph.textContent = state.fetchedFor ? "Bu aralıkta veri bulunamadı." : "Bir santral seçip “Veriyi getir”e basın.";
     $("chartRange").textContent = "";
     return;
   }
@@ -1255,9 +925,9 @@ function renderTable() {
   const tbl = $("tableBox");
   const s = seriesFor("day");
   const rows = s.pts.map(p => `<tr><td>${labelDay(p.k)}</td><td>${fmt(p.v, 1)}</td></tr>`).join("");
-  tbl.innerHTML = `<table><thead><tr><th>${esc(t("thDay"))}</th><th>${esc(t("thGenMwh"))}</th></tr></thead><tbody>${rows}</tbody></table>`;
+  tbl.innerHTML = `<table><thead><tr><th>Gün</th><th>Üretim (MWh)</th></tr></thead><tbody>${rows}</tbody></table>`;
   tbl.style.display = "block";
-  $("chartTitle").textContent = state.fetchedFor.name + " — " + t("titleDailyTable");
+  $("chartTitle").textContent = state.fetchedFor.name + " — Günlük toplam tablosu";
 }
 
 function drawChart(s) {
@@ -1280,16 +950,16 @@ function drawChart(s) {
 
   let out = "";
   const ticks = 4;
-  for (let k = 0; k <= ticks; k++) {
-    const v = yMax * k / ticks, yy = y(v);
+  for (let t = 0; t <= ticks; t++) {
+    const v = yMax * t / ticks, yy = y(v);
     out += `<line x1="${M.l}" y1="${yy}" x2="${W-M.r}" y2="${yy}" stroke="${C("--grid")}" stroke-width="1"/>`;
     out += `<text x="${M.l-8}" y="${yy+4}" text-anchor="end" font-size="11" fill="${C("--text-muted")}">${fmt(v, v < 10 ? 1 : 0)}</text>`;
   }
   out += `<text x="${M.l-8}" y="${M.t-6}" text-anchor="end" font-size="11" fill="${C("--text-secondary")}">${s.unit}</text>`;
   const step = Math.max(1, Math.round(n / 6));
   for (let i = 0; i < n; i += step) {
-    const lab = state.view === "hour" ? pts[i].k.slice(8,10) + " " + mon(+pts[i].k.slice(5,7)-1)
-              : state.view === "day"  ? pts[i].k.slice(8,10) + " " + mon(+pts[i].k.slice(5,7)-1) + " " + pts[i].k.slice(2,4)
+    const lab = state.view === "hour" ? pts[i].k.slice(8,10) + " " + AYLAR[+pts[i].k.slice(5,7)-1]
+              : state.view === "day"  ? pts[i].k.slice(8,10) + " " + AYLAR[+pts[i].k.slice(5,7)-1] + " " + pts[i].k.slice(2,4)
               : labelMonth(pts[i].k);
     out += `<text x="${x(i)}" y="${H-14}" text-anchor="middle" font-size="11" fill="${C("--text-muted")}">${lab}</text>`;
   }
@@ -1341,7 +1011,7 @@ function exportRows() {
   if (f.plants.length === 1) {
     const name = f.name;
     return {
-      headers: [t("exDate"), t("exHour"), t("exGen"), t("exPlant")],
+      headers: ["Tarih", "Saat", "Üretim (MWh)", "Santral"],
       rows: state.items.map(it => [it.date.slice(0,10), it.date.slice(11,16), it.total, name]),
     };
   }
@@ -1351,13 +1021,13 @@ function exportRows() {
     return m;
   });
   return {
-    headers: [t("exDate"), t("exHour"), ...f.plants.map(p => `${p.shortName || p.name} (MWh)`), t("exTotal")],
+    headers: ["Tarih", "Saat", ...f.plants.map(p => `${p.shortName || p.name} (MWh)`), "Toplam (MWh)"],
     rows: state.items.map(it =>
       [it.date.slice(0,10), it.date.slice(11,16), ...lookups.map(m => m.get(it.date) ?? ""), it.total]),
   };
 }
 function slug(s) {
-  return tokens(s).join("-").slice(0, 60) || t("slugFallback");
+  return tokens(s).join("-").slice(0, 60) || "santral";
 }
 function downloadBlob(bytes, name, type) {
   const url = URL.createObjectURL(new Blob([bytes], { type }));
@@ -1387,13 +1057,13 @@ $("dlx").onclick = () => {
 
 /* xlsx: sıkıştırmasız zip + minimal SpreadsheetML (kütüphanesiz) */
 const CRC_TABLE = (() => {
-  const tb = new Uint32Array(256);
+  const t = new Uint32Array(256);
   for (let n = 0; n < 256; n++) {
     let c = n;
     for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1;
-    tb[n] = c >>> 0;
+    t[n] = c >>> 0;
   }
-  return tb;
+  return t;
 })();
 function crc32(u8) {
   let c = 0xFFFFFFFF;
@@ -1455,7 +1125,7 @@ function makeXlsx(headers, rows) {
   const workbook = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
     '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" ' +
     'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">' +
-    `<sheets><sheet name="${xmlEsc(t("sheetName"))}" sheetId="1" r:id="rId1"/></sheets></workbook>`;
+    '<sheets><sheet name="Üretim" sheetId="1" r:id="rId1"/></sheets></workbook>';
   const wbRels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
     '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
     '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/></Relationships>';
@@ -1472,16 +1142,15 @@ function makeXlsx(headers, rows) {
 /* ═══════════ BAŞLATMA ═══════════ */
 async function init() {
   try {
-    setStatus("statusLoadingLicences");
+    $("statusNote").textContent = "Lisans listesi yükleniyor…";
     await loadLicenses();
     await loadPlants();
-    setStatus("statusPlantsLoaded", { n: state.plants.length });
+    $("statusNote").textContent = fmt(state.plants.length) + " santral yüklendi. Aramaya başlayın.";
   } catch (e) {
-    setStatus(null);
-    showError("errInitial", { msg: e.message });
+    $("statusNote").textContent = "";
+    showError("Başlangıç verileri alınamadı: " + e.message + " — sayfayı yenileyin.");
   }
 }
-applyLang();
 showLogin();
 </script>
 </body>
